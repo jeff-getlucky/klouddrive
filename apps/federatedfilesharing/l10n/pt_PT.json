@@ -29,11 +29,11 @@
     "Share it so your friends can share files with you:" : "Partilhe para que os seus amigos possam partilhar ficheiros consigo:",
     "Twitter" : "Twitter",
     "Add to your website" : "Adicione ao seu site da Web",
-    "Share with me via Nextcloud" : "Partilhe comigo via Nextcloud",
+    "Share with me via KloudDrive" : "Partilhe comigo via KloudDrive",
     "HTML Code:" : "Código HTML:",
-    "Share with me through my #Nextcloud Federated Cloud ID" : "Partilhe comigo através da minha Id. da Nuvem Federada #Nextcloud",
+    "Share with me through my #KloudDrive Federated Cloud ID" : "Partilhe comigo através da minha Id. da Nuvem Federada #KloudDrive",
     "Copy to clipboard" : "Copiar para área de transferência",
     "Copied!" : "Copiado!",
-    "Share with me through my #Nextcloud Federated Cloud ID, see %s" : "Partilhe comigo através da minha Id. da Nuvem Federada #Nextcloud, veja %s"
+    "Share with me through my #KloudDrive Federated Cloud ID, see %s" : "Partilhe comigo através da minha Id. da Nuvem Federada #KloudDrive, veja %s"
 },"pluralForm" :"nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;"
 }

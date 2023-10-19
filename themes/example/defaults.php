@@ -25,7 +25,7 @@ class OC_Theme {
 	 * @return string URL
 	 */
 	public function getBaseUrl() {
-		return 'https://nextcloud.com';
+		return 'https://drive.kloud.cn';
 	}
 
 	/**
@@ -33,7 +33,7 @@ class OC_Theme {
 	 * @return string URL
 	 */
 	public function getDocBaseUrl() {
-		return 'https://docs.nextcloud.com';
+		return 'https://drive.kloud.cn';
 	}
 
 	/**

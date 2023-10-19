@@ -17,7 +17,7 @@ p($theme->getTitle());
 		<meta name="apple-itunes-app" content="app-id=<?php p($theme->getiTunesAppId()); ?>">
 		<?php } ?>
 		<meta name="theme-color" content="<?php p($theme->getColorPrimary()); ?>">
-		<link rel="icon" href="<?php print_unescaped(image_path('core', 'favicon.ico')); /* IE11+ supports png */ ?>">
+		<link rel="icon" href="<?php print_unescaped(image_path('core', 'kd_favicon.ico')); /* IE11+ supports png */ ?>">
 		<link rel="apple-touch-icon" href="<?php print_unescaped(image_path('core', 'favicon-touch.png')); ?>">
 		<link rel="mask-icon" sizes="any" href="<?php print_unescaped(image_path('core', 'favicon-mask.svg')); ?>" color="<?php p($theme->getColorPrimary()); ?>">
 		<link rel="manifest" href="<?php print_unescaped(image_path('core', 'manifest.json')); ?>">

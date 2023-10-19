@@ -59,20 +59,20 @@ class OC_Defaults {
 	public function __construct() {
 		$config = \OC::$server->getConfig();
 
-		$this->defaultEntity = 'Nextcloud'; /* e.g. company name, used for footers and copyright notices */
-		$this->defaultName = 'Nextcloud'; /* short name, used when referring to the software */
-		$this->defaultTitle = 'Nextcloud'; /* can be a longer name, for titles */
-		$this->defaultBaseUrl = 'https://nextcloud.com';
-		$this->defaultSyncClientUrl = $config->getSystemValue('customclient_desktop', 'https://nextcloud.com/install/#install-clients');
+		$this->defaultEntity = 'Kloud Drive'; /* e.g. company name, used for footers and copyright notices */
+		$this->defaultName = 'Kloud Drive'; /* short name, used when referring to the software */
+		$this->defaultTitle = 'Kloud Drive'; /* can be a longer name, for titles */
+		$this->defaultBaseUrl = 'https://drive.kloud.cn';
+		$this->defaultSyncClientUrl = $config->getSystemValue('customclient_desktop', 'https://drive.kloud.cn/install/#install-clients');
 		$this->defaultiOSClientUrl = $config->getSystemValue('customclient_ios', 'https://geo.itunes.apple.com/us/app/nextcloud/id1125420102?mt=8');
 		$this->defaultiTunesAppId = $config->getSystemValue('customclient_ios_appid', '1125420102');
 		$this->defaultAndroidClientUrl = $config->getSystemValue('customclient_android', 'https://play.google.com/store/apps/details?id=com.nextcloud.client');
 		$this->defaultFDroidClientUrl = $config->getSystemValue('customclient_fdroid', 'https://f-droid.org/packages/com.nextcloud.client/');
-		$this->defaultDocBaseUrl = 'https://docs.nextcloud.com';
+		$this->defaultDocBaseUrl = 'https://drive.kloud.cn';//todo 上面几个连接后面都要改
 		$this->defaultDocVersion = \OC_Util::getVersion()[0]; // used to generate doc links
 		$this->defaultColorPrimary = '#0082c9';
 		$this->defaultTextColorPrimary = '#ffffff';
-		$this->defaultProductName = 'Nextcloud';
+		$this->defaultProductName = 'KloudDrive';
 
 		$themePath = OC::$SERVERROOT . '/themes/' . OC_Util::getTheme() . '/defaults.php';
 		if (file_exists($themePath)) {

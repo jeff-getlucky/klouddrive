@@ -34,12 +34,12 @@ OC.L10N.register(
     "Share it so your friends can share files with you:" : "Del den slik at venner kan dele filer med deg:",
     "Twitter" : "Twitter",
     "Add to your website" : "Legg på nettsiden din",
-    "Share with me via Nextcloud" : "Del med meg via Nextcloud",
+    "Share with me via KloudDrive" : "Del med meg via KloudDrive",
     "HTML Code:" : "HTML-kode:",
-    "Share with me through my #Nextcloud Federated Cloud ID" : "Del med meg gjennom min #Nextcloud-ID for sammenknyttet sky",
+    "Share with me through my #KloudDrive Federated Cloud ID" : "Del med meg gjennom min #KloudDrive-ID for sammenknyttet sky",
     "Copy to clipboard" : "Kopiert til utklippstavlen",
     "Clipboard is not available" : "Utklippstavlen er ikke tilgjengelig",
     "Copied!" : "Kopiert!",
-    "Share with me through my #Nextcloud Federated Cloud ID, see %s" : "Del med meg gjennom min #Nextcloud-ID for sammenknyttet sky, se %s"
+    "Share with me through my #KloudDrive Federated Cloud ID, see %s" : "Del med meg gjennom min #KloudDrive-ID for sammenknyttet sky, se %s"
 },
 "nplurals=2; plural=(n != 1);");

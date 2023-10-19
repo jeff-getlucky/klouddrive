@@ -17,9 +17,9 @@
     "Your Federated Cloud ID:" : "ID คลาวด์ที่ติดต่อกับภายนอกของคุณ:",
     "Twitter" : "ทวิตเตอร์",
     "Add to your website" : "เพิ่มไปยังเว็บไซต์",
-    "Share with me via Nextcloud" : "แชร์กับฉันผ่าน Nextcloud",
+    "Share with me via KloudDrive" : "แชร์กับฉันผ่าน KloudDrive",
     "HTML Code:" : "โค้ด HTML:",
-    "Share with me through my #Nextcloud Federated Cloud ID" : "แชร์กับฉันผ่าน ID คลาวด์ที่ติดต่อกับภายนอกของ #Nextcloud",
+    "Share with me through my #KloudDrive Federated Cloud ID" : "แชร์กับฉันผ่าน ID คลาวด์ที่ติดต่อกับภายนอกของ #KloudDrive",
     "Copy to clipboard" : "คัดลอกไปยังคลิปบอร์ด",
     "Clipboard is not available" : "คลิปบอร์ดไม่พร้อมใช้งาน",
     "Copied!" : "คัดลอกแล้ว!",
@@ -27,7 +27,7 @@
     "Not supported!" : "ไม่สนับสนุน!",
     "Press ⌘-C to copy." : "กด ⌘-C เพื่อคัดลอก",
     "Press Ctrl-C to copy." : "กด Ctrl-C เพื่อคัดลอก",
-    "Share with me through my #Nextcloud Federated Cloud ID, see %s" : "แชร์กับฉันผ่าน ID คลาวด์ที่ติดต่อกับภายนอกของ #Nextcloud ดูได้ที่ %s",
+    "Share with me through my #KloudDrive Federated Cloud ID, see %s" : "แชร์กับฉันผ่าน ID คลาวด์ที่ติดต่อกับภายนอกของ #KloudDrive ดูได้ที่ %s",
     "Open documentation" : "เปิดเอกสารประกอบ"
 },"pluralForm" :"nplurals=1; plural=0;"
 }

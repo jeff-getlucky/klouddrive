@@ -29,11 +29,11 @@ OC.L10N.register(
     "Share it so your friends can share files with you:" : "Jaga seda, et su sõbrad saaksid sinuga faile jagada:",
     "Twitter" : "Twitter",
     "Add to your website" : "Lisa oma veebisaidile",
-    "Share with me via Nextcloud" : "Jaga minuga läbi Nextcloudi",
+    "Share with me via KloudDrive" : "Jaga minuga läbi KloudDrivei",
     "HTML Code:" : "HTML kood:",
-    "Share with me through my #Nextcloud Federated Cloud ID" : "Jaga minuga läbi minu #Nextcloudi liitpilve ID",
+    "Share with me through my #KloudDrive Federated Cloud ID" : "Jaga minuga läbi minu #KloudDrivei liitpilve ID",
     "Copy to clipboard" : "Kopeeri lõikepuhvrisse",
     "Copied!" : "Kopeeritud!",
-    "Share with me through my #Nextcloud Federated Cloud ID, see %s" : "Jaga minuga läbi minu #Nextcloudi liitpilve ID, vaata %s"
+    "Share with me through my #KloudDrive Federated Cloud ID, see %s" : "Jaga minuga läbi minu #KloudDrivei liitpilve ID, vaata %s"
 },
 "nplurals=2; plural=(n != 1);");

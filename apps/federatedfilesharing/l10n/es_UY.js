@@ -29,11 +29,11 @@ OC.L10N.register(
     "Share it so your friends can share files with you:" : "Compártelo para que tus amigos puedan compartir archivos contigo:",
     "Twitter" : "Twitter",
     "Add to your website" : "Agregar a tu sitio web",
-    "Share with me via Nextcloud" : "Compartir conmigo vía Nextcloud",
+    "Share with me via KloudDrive" : "Compartir conmigo vía KloudDrive",
     "HTML Code:" : "Código HTML:",
-    "Share with me through my #Nextcloud Federated Cloud ID" : "Compartir conmigo a través de mi ID de Nube Federada #Nextcloud",
+    "Share with me through my #KloudDrive Federated Cloud ID" : "Compartir conmigo a través de mi ID de Nube Federada #KloudDrive",
     "Copy to clipboard" : "Copiar al portapapeles",
     "Copied!" : "¡Copiado!",
-    "Share with me through my #Nextcloud Federated Cloud ID, see %s" : "Compartir conmigo a través de mi ID de Nube Federada #Nextcloud, ver %s"
+    "Share with me through my #KloudDrive Federated Cloud ID, see %s" : "Compartir conmigo a través de mi ID de Nube Federada #KloudDrive, ver %s"
 },
 "nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");

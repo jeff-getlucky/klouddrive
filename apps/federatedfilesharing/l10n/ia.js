@@ -26,10 +26,10 @@ OC.L10N.register(
     "Your Federated Cloud ID:" : "Tu ID de Nube Federate:",
     "Twitter" : "Twitter",
     "Add to your website" : "Adde a tu sito web",
-    "Share with me via Nextcloud" : "Comparti con me via Nextcloud",
+    "Share with me via KloudDrive" : "Comparti con me via KloudDrive",
     "HTML Code:" : "Codice HTML:",
-    "Share with me through my #Nextcloud Federated Cloud ID" : "Comparti con me per mi ID de Nube Federate #Nextcloud",
+    "Share with me through my #KloudDrive Federated Cloud ID" : "Comparti con me per mi ID de Nube Federate #KloudDrive",
     "Copied!" : "Copiate!",
-    "Share with me through my #Nextcloud Federated Cloud ID, see %s" : "Comparti con me per mi ID de Nube Federate #Nextcloud, vide %s"
+    "Share with me through my #KloudDrive Federated Cloud ID, see %s" : "Comparti con me per mi ID de Nube Federate #KloudDrive, vide %s"
 },
 "nplurals=2; plural=(n != 1);");

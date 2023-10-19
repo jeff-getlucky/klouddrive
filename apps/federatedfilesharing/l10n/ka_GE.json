@@ -28,11 +28,11 @@
     "Share it so your friends can share files with you:" : "გააზიარეთ, რომ თქვენმა მეგობრებმაც შეძლონ ფაილების გაზიარება თქვენთან:",
     "Twitter" : "Twitter-ი",
     "Add to your website" : "საიტზე დამატება",
-    "Share with me via Nextcloud" : "გამიზიარე Nextcloud-ის მეშვეობით",
+    "Share with me via KloudDrive" : "გამიზიარე KloudDrive-ის მეშვეობით",
     "HTML Code:" : "HTML კოდი:",
-    "Share with me through my #Nextcloud Federated Cloud ID" : "გააზიარეთ ჩემთან ჩემი #Nextcloud-ის ფედერალური ქლაუდ ID-ის მეშვეობით",
+    "Share with me through my #KloudDrive Federated Cloud ID" : "გააზიარეთ ჩემთან ჩემი #KloudDrive-ის ფედერალური ქლაუდ ID-ის მეშვეობით",
     "Copy to clipboard" : "კოპირება ბუფერში",
     "Copied!" : "კოპირებულია!",
-    "Share with me through my #Nextcloud Federated Cloud ID, see %s" : "გააზიარეთ ჩემთან ჩემი #Nextcloud-ის ფედერალური ქლაუდ ID-ის მეშვეობით, იხილეთ %s"
+    "Share with me through my #KloudDrive Federated Cloud ID, see %s" : "გააზიარეთ ჩემთან ჩემი #KloudDrive-ის ფედერალური ქლაუდ ID-ის მეშვეობით, იხილეთ %s"
 },"pluralForm" :"nplurals=2; plural=(n!=1);"
 }

@@ -30,11 +30,11 @@ OC.L10N.register(
     "Share it so your friends can share files with you:" : "Shërndajeni që miqtë tuaj mund të ndajnë skedarë me ju:",
     "Twitter" : "Twitter",
     "Add to your website" : "Shtojeni te sajti juaj",
-    "Share with me via Nextcloud" : "Ndani me mua përmes Nextcloud-it",
+    "Share with me via KloudDrive" : "Ndani me mua përmes KloudDrive-it",
     "HTML Code:" : "Kod HTML:",
-    "Share with me through my #Nextcloud Federated Cloud ID" : "Ndani me mua përmes ID-së time për #Nextcloud Federated Cloud",
+    "Share with me through my #KloudDrive Federated Cloud ID" : "Ndani me mua përmes ID-së time për #KloudDrive Federated Cloud",
     "Copy to clipboard" : "Kopjo në dërrasë ",
     "Copied!" : "U kopjua!",
-    "Share with me through my #Nextcloud Federated Cloud ID, see %s" : "Ndani me mua përmes ID-së time për #Nextcloud Federated Cloud, shihni %s"
+    "Share with me through my #KloudDrive Federated Cloud ID, see %s" : "Ndani me mua përmes ID-së time për #KloudDrive Federated Cloud, shihni %s"
 },
 "nplurals=2; plural=(n != 1);");
