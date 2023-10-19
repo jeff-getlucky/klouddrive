@@ -42,10 +42,10 @@
 			@update:checked="updateSettings">
 			{{ t('notifications', 'Play sound when a new notification arrives') }}
 		</NcCheckboxRadioSwitch>
-		<NcCheckboxRadioSwitch :checked.sync="config.sound_talk"
-			@update:checked="updateSettings">
-			{{ t('notifications', 'Play sound when a call started (requires Nextcloud Talk)') }}
-		</NcCheckboxRadioSwitch>
+<!--		<NcCheckboxRadioSwitch :checked.sync="config.sound_talk"-->
+<!--			@update:checked="updateSettings">-->
+<!--			{{ t('notifications', 'Play sound when a call started (requires Nextcloud Talk)') }}-->
+<!--		</NcCheckboxRadioSwitch>-->
 	</NcSettingsSection>
 </template>
 
