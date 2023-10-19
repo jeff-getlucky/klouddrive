@@ -54,6 +54,9 @@ trait CommonSettingsTrait {
 	/** @var ISubAdmin */
 	private $subAdmin;
 
+	//Hide menu list
+	private $guarded = ['overview', 'support', 'ai', 'admindelegation', 'notifications', 'workflow', 'survey_client', 'logging', 'serverinfo', 'groupware'];
+
 	/**
 	 * @return array{forms: array{personal: array, admin: array}}
 	 */
@@ -95,6 +98,13 @@ trait CommonSettingsTrait {
 
 				$active = $section->getID() === $currentSection
 					&& $type === $currentType;
+
+				//Hide menu when debug mode is false
+				if (\OC::$server->getConfig()->getSystemValue('debug', false) != 'true') {
+					if (in_array($section->getID(), $this->guarded)) {
+						continue;
+					}
+				}
 
 				$templateParameters[] = [
 					'anchor' => $section->getID(),

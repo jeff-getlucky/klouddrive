@@ -124,6 +124,10 @@ class Delegation implements ISettings {
 	}
 
 	public function getForm(): TemplateResponse {
+		if (\OC::$server->getConfig()->getSystemValue('debug', false) != 'true') {
+			header('Location:/settings/admin');//关闭入口
+			exit;
+		}
 		$this->initSettingState();
 		$this->initAvailableGroupState();
 		$this->initAuthorizedGroupState();

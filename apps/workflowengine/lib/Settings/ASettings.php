@@ -80,6 +80,10 @@ abstract class ASettings implements ISettings {
 	 * @return TemplateResponse
 	 */
 	public function getForm(): TemplateResponse {
+		if (\OC::$server->getConfig()->getSystemValue('debug', false) != 'true') {
+			header('Location:/settings/admin');//关闭入口
+			exit;
+		}
 		// @deprecated in 20.0.0: retire this one in favor of the typed event
 		$this->eventDispatcher->dispatch(
 			'OCP\WorkflowEngine::loadAdditionalSettingScripts',

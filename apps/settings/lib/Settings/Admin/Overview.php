@@ -46,6 +46,11 @@ class Overview implements IDelegatedSettings {
 	 * @return TemplateResponse
 	 */
 	public function getForm() {
+		if (\OC::$server->getConfig()->getSystemValue('debug', false) != 'true') {
+			header('Location:/settings/admin');//关闭入口
+			exit;
+		}
+
 		$parameters = [
 			'checkForWorkingWellKnownSetup' => $this->config->getSystemValue('check_for_working_wellknown_setup', true),
 		];

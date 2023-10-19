@@ -63,6 +63,10 @@ class CalDAVSettings implements IDelegatedSettings {
 	}
 
 	public function getForm(): TemplateResponse {
+		if (\OC::$server->getConfig()->getSystemValue('debug', false) != 'true') {
+			header('Location:/settings/admin');//关闭入口
+			exit;
+		}
 		$this->initialState->provideInitialState('userSyncCalendarsDocUrl', $this->urlGenerator->linkToDocs('user-sync-calendars'));
 		foreach (self::defaults as $key => $default) {
 			$value = $this->config->getAppValue(Application::APP_ID, $key, $default);
