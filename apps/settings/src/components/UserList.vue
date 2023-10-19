@@ -31,7 +31,7 @@
 				:disabled="loading.all"
 				class="modal__content"
 				@submit.prevent="createUser">
-				<h2>{{ t('settings','New user111') }}</h2>
+				<h2>{{ t('settings','New user') }}</h2>
 				<input id="newusername"
 					ref="newusername"
 					v-model="newUser.id"
@@ -162,6 +162,7 @@
 				</div>
 				<div class="user-actions">
 					<NcButton id="newsubmit"
+										:disabled="newsubmit_disabled"
 						type="primary"
 						native-type="submit"
 						value="">
@@ -327,6 +328,7 @@ export default {
 			possibleManagers: [],
 			searchQuery: '',
 			newUser: Object.assign({}, newUser),
+	  	newsubmit_disabled: false
 		}
 	},
 	computed: {
@@ -547,6 +549,7 @@ export default {
 			this.loading.all = false
 		},
 		createUser() {
+			this.newsubmit_disabled = true
 			this.loading.all = true
 			this.$store.dispatch('addUser', {
 				userid: this.newUser.id,
@@ -563,9 +566,11 @@ export default {
 					this.resetForm()
 					this.$refs.newusername.focus()
 					this.closeModal()
+		      this.newsubmit_disabled = false
 				})
 				.catch((error) => {
 					this.loading.all = false
+					this.newsubmit_disabled = false
 					if (error.response && error.response.data && error.response.data.ocs && error.response.data.ocs.meta) {
 						const statuscode = error.response.data.ocs.meta.statuscode
 						if (statuscode === 102) {
