@@ -1,0 +1,11 @@
+{ "translations": {
+    "Kloud integration" : "Kloud集成",
+    "Allow access data from Kloud" : "是否允许Kloud访问数据",
+    "Copy the key below and paste into" : "复制下面的密钥并粘贴到Kloud",
+    "Copy" : "复制",
+    "Regenerate" : "重新生成",
+    "Status" : "状态",
+    "Connected kloud.cn" : "已连接kloud.cn",
+    "Disconnected" : "未连接"
+},"pluralForm" :"nplurals=1; plural=0;"
+}

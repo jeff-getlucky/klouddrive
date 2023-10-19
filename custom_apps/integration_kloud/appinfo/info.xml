@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+    <!--
+    SPDX-FileCopyrightText: Poulou <pouloutidis.d@gmail.com>
+    SPDX-License-Identifier: CC0-1.0
+    -->
+    <id>integration_kloud</id>
+    <name>Kloud integration</name>
+    <summary>Kloud integration</summary>
+    <description><![CDATA[Kloud integration]]></description>
+    <version>0.0.1</version>
+    <namespace>KloudIntegration</namespace>
+    <category>integration</category>
+	<website>https://www.kloud.cn</website>
+    <dependencies>
+        <nextcloud min-version="27" max-version="27"/>
+    </dependencies>
+	<settings>
+		<admin>OCA\KloudIntegration\Settings\AdminSettings</admin>
+		<admin-section>OCA\KloudIntegration\Sections\KloudAdmin</admin-section>
+	</settings>
+</info>
