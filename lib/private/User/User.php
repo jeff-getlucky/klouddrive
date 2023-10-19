@@ -45,6 +45,7 @@ use OCP\Group\Events\BeforeUserRemovedEvent;
 use OCP\Group\Events\UserRemovedEvent;
 use OCP\IAvatarManager;
 use OCP\IConfig;
+use OCP\IDBConnection;
 use OCP\IImage;
 use OCP\IURLGenerator;
 use OCP\IUser;
@@ -194,6 +195,24 @@ class User implements IUser {
 		if ($mailAddress === '') {
 			$this->config->deleteUserValue($this->uid, 'settings', 'email');
 		} else {
+			//unique email check 2023年10月18日17:09:16 Jeff
+			if ($oldMailAddress !== strtolower($mailAddress)) {
+				$connection = \OC::$server->get(IDBConnection::class);
+				$query = $connection->getQueryBuilder();
+				$query->select($query->createFunction('COUNT(*)'))->from('accounts')->andWhere(
+					$query->expr()->like(
+						'data',
+						$query->createNamedParameter('%' . $connection->escapeLikeParameter($mailAddress). '%')
+					)
+				);
+				$result = $query->execute();
+				$email_unique_res = $result->fetch();
+				$result->closeCursor();
+				if ($email_unique_res['COUNT(*)'] > 0) {
+					$mailAddress = $oldMailAddress;//rollback
+				}
+			}
+			//unique email check 2023年10月18日17:09:16 Jeff
 			$this->config->setUserValue($this->uid, 'settings', 'email', $mailAddress);
 		}
 
