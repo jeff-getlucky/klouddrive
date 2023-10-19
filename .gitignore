@@ -1,4 +1,5 @@
 # the default generated dir + db file
+/dist
 /data
 /config/config.php
 /config/*.config.php
