@@ -24,14 +24,19 @@
 		var text = '<a href="' + OC.generateUrl('apps/files') + '">' +
 			t('impersonate', 'Logged in as {name} ({uid})', {uid: OC.getCurrentUser().uid, name: OC.getCurrentUser().displayName}) +
 			'</a>';
+		$('.header-right').prepend('<button id="impersonate_logout">退出查看&nbsp;'+ OC.getCurrentUser().displayName +'</button>')
 
-		OC.Notification.showHtml(
-			text,
-			{
-				isHTML: true,
-				timeout: 0
-			}
-		);
+		document.getElementById('impersonate_logout').onclick = function () {
+			logoutHandler()
+		}
+		
+		// OC.Notification.showHtml(
+		// 	text,
+		// 	{
+		// 		isHTML: true,
+		// 		timeout: 0
+		// 	}
+		// );
 	}
 
 	var enableImpersonateLogout = function (event, delay) {

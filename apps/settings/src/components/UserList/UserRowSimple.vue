@@ -7,7 +7,9 @@
 				alt=""
 				width="32"
 				height="32"
-				:src="generateAvatar(user.id, isDarkTheme)">
+				:src="generateAvatar(user.id, isDarkTheme)"
+        @click="impersonate(user.id)"
+      >
 		</div>
 		<!-- dirty hack to ellipsis on two lines -->
 		<div class="name">
@@ -92,6 +94,8 @@ import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton.js'
 import ClickOutside from 'vue-click-outside'
 import { getCurrentUser } from '@nextcloud/auth'
 import UserRowMixin from '../../mixins/UserRowMixin.js'
+import axios from '@nextcloud/axios'
+import { generateUrl } from '@nextcloud/router'
 export default {
 	name: 'UserRowSimple',
 	components: {
@@ -191,6 +195,17 @@ export default {
 		toggleEdit() {
 			this.$emit('update:editing', true)
 		},
+    impersonate(user_id) {
+      const data = {
+        userId: encodeURIComponent(user_id)
+      }
+      axios.post(generateUrl('apps/impersonate/user'), data).then(res => {
+        window.location = OC.generateUrl('/')
+      }).catch(err => {
+        OC.Notification.showTemporary(t('impersonate', err.response.data.message))
+        throw err
+      })
+    }
 	},
 }
 </script>

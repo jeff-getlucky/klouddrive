@@ -49,6 +49,6 @@
 		}
 	}
 
-	document.addEventListener('DOMContentLoaded', registerFunction)
+	//document.addEventListener('DOMContentLoaded', registerFunction)
 
 })(OC)
