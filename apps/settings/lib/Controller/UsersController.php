@@ -598,4 +598,22 @@ class UsersController extends Controller {
 		openssl_sign(json_encode($message), $signature, $privateKey, OPENSSL_ALGO_SHA512);
 		return base64_encode($signature);
 	}
+
+	/**
+	 * @NoCSRFRequired
+	 *
+	 * @return DataResponse
+	 */
+	public function getUserCapacity(): DataResponse {
+		$people_capacity = intval(\OC::$server->getConfig()->getSystemValue('people_capacity', 0));
+		$userCount = array_reduce($this->userManager->countUsers(), function ($v, $w) {
+			return $v + (int)$w;
+		}, 0);
+		if ($people_capacity == 0) {
+			$people_capacity = '∞';
+		}
+		return new DataResponse(['msg' => '', 'data' => ['capacity' => $people_capacity, 'user_count' => $userCount], 'code' => 200]);
+
+
+	}
 }

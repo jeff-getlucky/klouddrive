@@ -76,6 +76,7 @@ use OCP\Security\Events\GenerateSecurePasswordEvent;
 use OCP\Security\ISecureRandom;
 use OCP\User\Backend\ISetDisplayNameBackend;
 use Psr\Log\LoggerInterface;
+use OCP\IDBConnection;
 
 class UsersController extends AUserData {
 	/** @var IURLGenerator */
@@ -348,6 +349,18 @@ class UsersController extends AUserData {
 		if (empty($userid) && $this->config->getAppValue('core', 'newUser.generateUserID', 'no') === 'yes') {
 			$userid = $this->createNewUserId();
 		}
+
+        //Limit the number of users
+		$people_capacity = intval(\OC::$server->getConfig()->getSystemValue('people_capacity', 0));
+        if ($people_capacity > 0) {
+            $userCount = array_reduce($this->userManager->countUsers(), function ($v, $w) {
+                return $v + (int)$w;
+            }, 0);
+            if ($userCount > $people_capacity - 1) {
+				$this->logger->error('Failed addUser attempt: User capacity limit.', ['app' => 'ocs_api']);
+                throw new OCSException($this->l10nFactory->get('provisioning_api')->t('User capacity limit'), 102);
+            }
+        }
 
 		if ($this->userManager->userExists($userid)) {
 			$this->logger->error('Failed addUser attempt: User already exists.', ['app' => 'ocs_api']);

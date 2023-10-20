@@ -82,6 +82,15 @@
 					:count="group.count" />
 			</template>
 			<template #footer>
+				<div v-if="userCapacity > 0" style="margin-left: 20px;margin-right: 20px;margin-bottom: 5px;">
+					{{ t('settings', 'Allocable quantity')}}:&nbsp;{{ userCapacity }}
+					<progress
+			    :class="{'warn': userCount / userCapacity > 0.8}"
+					style="max-height: 30px;"
+					:value="userCount"
+					:max="userCapacity" />
+				</div>
+
 				<NcAppNavigationSettings>
 					<div>
 						<p>{{ t('settings', 'Default quota:') }}</p>
@@ -253,6 +262,9 @@ export default {
 		userCount() {
 			return this.$store.getters.getUserCount
 		},
+		userCapacity() {
+			return this.$store.getters.getUserCapacity
+		},
 		settings() {
 			return this.$store.getters.getServerData
 		},
@@ -326,8 +338,10 @@ export default {
 			groups: this.$store.getters.getServerData.groups,
 			orderBy: this.$store.getters.getServerData.sortGroups,
 			userCount: this.$store.getters.getServerData.userCount,
+	    userCapacity: this.$store.getters.getServerData.userCapacity,
 		})
-		this.$store.dispatch('getPasswordPolicyMinLength')
+	this.$store.dispatch('getUserCapacity')
+	this.$store.dispatch('getPasswordPolicyMinLength')
 	},
 	created() {
 		// init the OCA.Settings.UserList object

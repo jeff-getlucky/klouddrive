@@ -28,7 +28,7 @@
 
 import api from './api.js'
 import axios from '@nextcloud/axios'
-import { generateOcsUrl } from '@nextcloud/router'
+import {generateOcsUrl, generateUrl} from '@nextcloud/router'
 import logger from '../logger.js'
 
 const orderGroups = function(groups, orderBy) {
@@ -62,6 +62,7 @@ const state = {
 	usersOffset: 0,
 	usersLimit: 25,
 	userCount: 0,
+	userCapacity: 0,
 }
 
 const mutations = {
@@ -74,10 +75,11 @@ const mutations = {
 	setPasswordPolicyMinLength(state, length) {
 		state.minPasswordLength = length !== '' ? length : 0
 	},
-	initGroups(state, { groups, orderBy, userCount }) {
+	initGroups(state, { groups, orderBy, userCount, userCapacity }) {
 		state.groups = groups.map(group => Object.assign({}, defaults.group, group))
 		state.orderBy = orderBy
 		state.userCount = userCount
+		state.userCapacity = userCapacity
 		state.groups = orderGroups(state.groups, state.orderBy)
 
 	},
@@ -221,6 +223,9 @@ const mutations = {
 		state.users = []
 		state.usersOffset = 0
 	},
+	setUserCapacity(state, capacity) {
+		state.userCapacity = capacity
+	},
 }
 
 const getters = {
@@ -246,6 +251,9 @@ const getters = {
 	getUserCount(state) {
 		return state.userCount
 	},
+	getUserCapacity(state) {
+		return state.userCapacity
+	}
 }
 
 const CancelToken = axios.CancelToken
@@ -673,6 +681,10 @@ const actions = {
 				.then(response => true)
 				.catch((error) => { throw error })
 		}).catch((error) => context.commit('API_FAILURE', { userid, error }))
+	},
+
+	getUserCapacity(context) {
+		return api.get(generateUrl('/settings/userCapacity')).then((response) => context.commit('setUserCapacity', response.data.data.capacity))
 	},
 }
 
