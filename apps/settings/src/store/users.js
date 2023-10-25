@@ -63,6 +63,10 @@ const state = {
 	usersLimit: 25,
 	userCount: 0,
 	userCapacity: 0,
+	quotaTotal: 0,
+	quotaTotalHuman: 0,
+	quotaUsed: 0,
+	quotaUsedHuman: 0,
 }
 
 const mutations = {
@@ -75,11 +79,15 @@ const mutations = {
 	setPasswordPolicyMinLength(state, length) {
 		state.minPasswordLength = length !== '' ? length : 0
 	},
-	initGroups(state, { groups, orderBy, userCount, userCapacity }) {
+	initGroups(state, { groups, orderBy, userCount, userCapacity, quotaTotal, quotaTotalHuman, quotaUsed, quotaUsedHuman  }) {
 		state.groups = groups.map(group => Object.assign({}, defaults.group, group))
 		state.orderBy = orderBy
 		state.userCount = userCount
 		state.userCapacity = userCapacity
+		state.quotaTotal = quotaTotal
+		state.quotaTotalHuman = quotaTotalHuman
+		state.quotaUsed = quotaUsed
+		state.quotaUsedHuman = quotaUsedHuman
 		state.groups = orderGroups(state.groups, state.orderBy)
 
 	},
@@ -226,6 +234,19 @@ const mutations = {
 	setUserCapacity(state, capacity) {
 		state.userCapacity = capacity
 	},
+	setQuotaTotal(state, total) {
+		state.quotaTotal = total
+	},
+	setQuotaTotalHuman(state, totalHuman) {
+		state.quotaTotalHuman = totalHuman
+	},
+	setQuotaUsed(state, used) {
+		state.quotaUsed = used
+	},
+	setQuotaUsedHuman(state, usedHuman) {
+		state.quotaUsedHuman = usedHuman
+	},
+
 }
 
 const getters = {
@@ -253,6 +274,18 @@ const getters = {
 	},
 	getUserCapacity(state) {
 		return state.userCapacity
+	},
+	getQuotaTotal(state) {
+		return state.quotaTotal
+	},
+	getQuotaTotalHuman(state) {
+		return state.quotaTotalHuman
+	},
+	getQuotaUsed(state) {
+		return state.quotaUsed
+	},
+	getQuotaUsedHuman(state) {
+		return state.quotaUsedHuman
 	}
 }
 
@@ -685,6 +718,15 @@ const actions = {
 
 	getUserCapacity(context) {
 		return api.get(generateUrl('/settings/userCapacity')).then((response) => context.commit('setUserCapacity', response.data.data.capacity))
+	},
+
+	getQuotaStatus(context) {
+		return api.get(generateUrl('/settings/quotaStatus')).then(function (response) {
+			context.commit('setQuotaTotal', response.data.data.quotaTotal)
+			context.commit('setQuotaTotalHuman', response.data.data.quotaTotalHuman)
+			context.commit('setQuotaUsed', response.data.data.quotaUsed)
+			context.commit('setQuotaUsedHuman', response.data.data.quotaUsedHuman)
+		})
 	},
 }
 

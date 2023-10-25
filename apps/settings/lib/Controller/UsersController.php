@@ -242,7 +242,7 @@ class UsersController extends Controller {
 		];
 
 		/* QUOTAS PRESETS */
-		$quotaPreset = $this->parseQuotaPreset($this->config->getAppValue('files', 'quota_preset', '1 GB, 5 GB, 10 GB'));
+		$quotaPreset = $this->parseQuotaPreset($this->config->getAppValue('files', 'quota_preset', '5 GB, 50 GB, 200 GB'));
 		$allowUnlimitedQuota = $this->config->getAppValue('files', 'allow_unlimited_quota', '1') === '1';
 		if (!$allowUnlimitedQuota && count($quotaPreset) > 0) {
 			$defaultQuota = $this->config->getAppValue('files', 'default_quota', $quotaPreset[0]);
@@ -613,7 +613,31 @@ class UsersController extends Controller {
 			$people_capacity = '∞';
 		}
 		return new DataResponse(['msg' => '', 'data' => ['capacity' => $people_capacity, 'user_count' => $userCount], 'code' => 200]);
+	}
 
-
+	/**
+	 * @NoCSRFRequired
+	 *
+	 * @return DataResponse
+	 */
+	public function getQuotaStatus(): DataResponse {
+		$quota_total_human = (\OC::$server->getConfig()->getSystemValue('storage_capacity', 0));
+		$quota_total = \OC_Helper::computerFileSize($quota_total_human);
+		$quota_used_human = 0;
+		$quota_sum = 0;
+		if ($quota_total) {
+			$qb = \OCP\Server::get(\OCP\IDBConnection::class)->getQueryBuilder();
+			$result = $qb->select('configvalue')
+				->from('preferences')
+				->where($qb->expr()->eq('appid', $qb->createNamedParameter('files')))
+				->executeQuery();
+			$quota_sum = 0;
+			while ($row = $result->fetch()) {
+				$bytesQuota = \OC_Helper::computerFileSize($row['configvalue']);
+				$quota_sum += $bytesQuota;
+			}
+			$quota_used_human = \OC_Helper::humanFileSize($quota_sum);
+		}
+		return new DataResponse(['msg' => '', 'data' => ['quotaTotalHuman' => $quota_total_human, 'quotaTotal' => $quota_total, 'quotaUsed' => $quota_sum, 'quotaUsedHuman' => $quota_used_human], 'code' => 200]);
 	}
 }

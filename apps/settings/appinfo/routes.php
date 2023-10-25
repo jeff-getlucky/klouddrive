@@ -86,5 +86,6 @@ return [
 		['name' => 'Reasons#getPdf', 'url' => '/settings/download/reasons', 'verb' => 'GET', 'root' => ''],
 
 		['name' => 'Users#getUserCapacity', 'url' => '/settings/userCapacity', 'verb' => 'GET', 'root' => ''],
+		['name' => 'Users#getQuotaStatus', 'url' => '/settings/quotaStatus', 'verb' => 'GET', 'root' => ''],
 	]
 ];

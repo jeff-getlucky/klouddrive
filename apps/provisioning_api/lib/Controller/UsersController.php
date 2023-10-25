@@ -361,6 +361,7 @@ class UsersController extends AUserData {
                 throw new OCSException($this->l10nFactory->get('provisioning_api')->t('User capacity limit'), 102);
             }
         }
+		//todo limit the quota of users
 
 		if ($this->userManager->userExists($userid)) {
 			$this->logger->error('Failed addUser attempt: User already exists.', ['app' => 'ocs_api']);
@@ -883,6 +884,26 @@ class UsersController extends AUserData {
 				break;
 			case self::USER_FIELD_QUOTA:
 				$quota = $value;
+
+				//Limit the quota
+				$storage_capacity = \OC_Helper::computerFileSize((\OC::$server->getConfig()->getSystemValue('storage_capacity', 0)));
+				if ($storage_capacity) {
+					$qb_quota = \OCP\Server::get(\OCP\IDBConnection::class)->getQueryBuilder();
+					$result = $qb_quota->select('configvalue')
+						->from('preferences')
+						->where($qb_quota->expr()->eq('appid', $qb_quota->createNamedParameter('files')))
+						->executeQuery();
+					$quota_sum = 0;
+					while ($row = $result->fetch()) {
+						$bytesQuota = \OC_Helper::computerFileSize($row['configvalue']);
+						$quota_sum += $bytesQuota;
+					}
+					$quota_sum -= \OC_Helper::computerFileSize($targetUser->getQuota());
+					if (($quota_sum + \OC_Helper::computerFileSize($quota)) > $storage_capacity) {
+						throw new OCSException($this->l10nFactory->get('provisioning_api')->t('Quota limit'), 102);
+					}
+				}
+
 				if ($quota !== 'none' && $quota !== 'default') {
 					if (is_numeric($quota)) {
 						$quota = (float) $quota;

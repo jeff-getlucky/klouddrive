@@ -91,8 +91,17 @@
 					:max="userCapacity" />
 				</div>
 
+				<div v-if="quotaTotal > 0" style="margin-left: 20px;margin-right: 20px;margin-bottom: 5px;">
+					{{ t('settings', 'Allocable quota')}}:&nbsp;{{ quotaTotalHuman }}
+					<progress
+					:class="{'warn': quotaUsed / quotaTotal > 0.8}"
+					style="max-height: 30px;"
+					:value="quotaUsed"
+					:max="quotaTotal" />
+				</div>
+
 				<NcAppNavigationSettings>
-					<div>
+					<div v-if="0">
 						<p>{{ t('settings', 'Default quota:') }}</p>
 						<NcMultiselect :value="defaultQuota"
 							:options="quotaOptions"
@@ -265,6 +274,18 @@ export default {
 		userCapacity() {
 			return this.$store.getters.getUserCapacity
 		},
+		quotaTotal() {
+			return this.$store.getters.getQuotaTotal
+		},
+		quotaTotalHuman() {
+			return this.$store.getters.getQuotaTotalHuman
+		},
+	  quotaUsed() {
+			return this.$store.getters.getQuotaUsed
+		},
+		quotaUsedHuman() {
+			return this.$store.getters.getQuotaUsedHuman
+		},
 		settings() {
 			return this.$store.getters.getServerData
 		},
@@ -339,8 +360,13 @@ export default {
 			orderBy: this.$store.getters.getServerData.sortGroups,
 			userCount: this.$store.getters.getServerData.userCount,
 	    userCapacity: this.$store.getters.getServerData.userCapacity,
+	    quotaTotal: this.$store.getters.getServerData.quotaTotal,
+	    quotaTotalHuman: this.$store.getters.getServerData.quotaTotalHuman,
+	    quotaUsed: this.$store.getters.getServerData.quotaUsed,
+	    quotaUsedHuman: this.$store.getters.getServerData.quotaUsedHuman,
 		})
 	this.$store.dispatch('getUserCapacity')
+	this.$store.dispatch('getQuotaStatus')
 	this.$store.dispatch('getPasswordPolicyMinLength')
 	},
 	created() {

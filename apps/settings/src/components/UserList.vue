@@ -123,10 +123,10 @@
 				</div>
 				<div class="quota modal__item">
 					<NcMultiselect v-model="newUser.quota"
-						:allow-empty="false"
 						:options="quotaOptions"
 						:placeholder="t('settings', 'Select user quota')"
 						:taggable="true"
+            required="required"
 						class="multiselect-vue"
 						label="label"
 						track-by="id"
@@ -271,8 +271,8 @@ const unlimitedQuota = {
 	label: t('settings', 'Unlimited'),
 }
 const defaultQuota = {
-	id: 'default',
-	label: t('settings', 'Default quota'),
+	id: '5 GB',//禁用默认配额
+	label: '5 GB',
 }
 const newUser = {
 	id: '',
@@ -378,7 +378,7 @@ export default {
 			if (this.settings.allowUnlimitedQuota) {
 				quotaPreset.unshift(this.unlimitedQuota)
 			}
-			quotaPreset.unshift(this.defaultQuota)
+			// quotaPreset.unshift(this.defaultQuota)
 			return quotaPreset
 		},
 		minPasswordLength() {

@@ -549,6 +549,7 @@ OC.L10N.register(
     "Select manager" : "选择管理者",
     "User's table" : "用户的表格",
     "Select user manager" : "选择用户管理者",
-    "Allocable quantity" : "可分配数量",
+    "Allocable quantity" : "总人数",
+    "Allocable quota" : "磁盘总量",
 },
 "nplurals=1; plural=0;");
