@@ -1,0 +1,68 @@
+.peertime-progress-pie-chart {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-color: #e5e5e5;
+    position: relative;
+}
+.peertime-progress-pie-chart.peertime-gt-50 {
+    background-color: #81ce97;
+}
+
+.peertime-ppc-progress {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    left: calc(50% - 100px);
+    top: calc(50% - 100px);
+    width: 200px;
+    height: 200px;
+    clip: rect(0, 200px, 200px, 100px);
+}
+.peertime-ppc-progress .peertime-ppc-progress-fill {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    left: calc(50% - 100px);
+    top: calc(50% - 100px);
+    width: 200px;
+    height: 200px;
+    clip: rect(0, 100px, 200px, 0);
+    background: #81ce97;
+    transform: rotate(60deg);
+}
+.peertime-gt-50 .peertime-ppc-progress {
+    clip: rect(0, 100px, 200px, 0);
+}
+.peertime-gt-50 .peertime-ppc-progress .peertime-ppc-progress-fill {
+    clip: rect(0, 200px, 200px, 100px);
+    background: #e5e5e5;
+}
+
+.peertime-ppc-percents {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    left: calc(50% - 173.9130434783px / 2);
+    top: calc(50% - 173.9130434783px / 2);
+    width: 173.9130434783px;
+    height: 173.9130434783px;
+    background: #fff;
+    text-align: center;
+    display: table;
+}
+.peertime-ppc-percents span {
+    display: block;
+    font-size: 2.6em;
+    font-weight: bold;
+    color: #81ce97;
+}
+
+.peertime-pcc-percents-wrapper {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.peertime-progress-pie-chart {
+    margin: 50px auto 0;
+}

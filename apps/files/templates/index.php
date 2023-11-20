@@ -1,3 +1,14 @@
+<link rel="stylesheet" href="css/progress-pei.css">
+<div class="peertime-progress-pie-chart" data-percent="0" style="display:none;z-index: 9999;position: absolute;margin: auto;left: 50%;top: 50%;transform: translate(-50%,-50%)">
+    <div class="peertime-ppc-progress">
+        <div class="peertime-ppc-progress-fill"></div>
+    </div>
+    <div class="peertime-ppc-percents">
+        <div class="peertime-pcc-percents-wrapper">
+            <span>%</span>
+        </div>
+    </div>
+</div>
 <?php /** @var \OCP\IL10N $l */ ?>
 <?php $_['appNavigation']->printPage(); ?>
 

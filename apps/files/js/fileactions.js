@@ -15,6 +15,15 @@
 	 * @constructs FileActions
 	 * @memberof OCA.Files
 	 */
+	var drive_phone = '';
+	$.ajax({
+		type: 'POST',
+		url: OC.generateUrl('apps/integration_kloud/getPhone'),
+		contentType: 'application/json',
+		success:function (res) {
+			drive_phone = res.message
+		}
+	})
 	var FileActions = function() {
 		this.initialize();
 	};
@@ -665,6 +674,255 @@
 				iconClass: 'icon-rename',
 				actionHandler: function (filename, context) {
 					context.fileList.rename(filename);
+				}
+			});
+
+			this.registerAction({
+				name: 'SendToKloudMeeting',
+				displayName: t('files', 'Send to Kloud meeting'),
+				mime: 'file',
+				order: -1000,
+				permissions: OC.PERMISSION_READ,
+				iconClass: 'icon-kloud',
+				actionHandler: function (filename, context) {
+				}
+			});
+
+			this.registerAction({
+				name: 'ViewLiveDoc',
+				displayName: t('files', 'View LiveDoc'),
+				mime: 'file',
+				order: -1000,
+				permissions: OC.PERMISSION_READ,
+				iconClass: 'icon-kloud',
+				actionHandler: function (filename, context) {
+					let drive_dir, drive_file_id, drive_file_mtime, drive_file_hash
+
+					if (context.$file) {
+						drive_dir = context.$file.attr('data-path')
+						drive_file_id = context.$file.attr('data-id')
+						drive_file_mtime = context.$file.attr('data-mtime')
+						drive_file_hash = context.$file.attr('data-etag')
+					} else {
+						OC.Notification.show('Error', {type: 'error'});
+						return
+					}
+					function b64EncodeUnicode(str) {
+						return btoa(encodeURI(str))
+					}
+
+					let peertime_userToken, peertime_uniqueIDs, peertime_file_hash, peertime_UploadFileWithHash_FileID, peertime_UploadFileWithHash_Path, peertime_startSending_body, peertime_QuerySending_token, peertime_UploadNewFile_body, peertime_UpdateAttachmentBindRelation_body, peertime_AttachmentID, peertime_FinishPercent
+					peertime_FinishPercent = 0
+					function AttachmentIDhandler()
+					{
+						window.open('https://kloud.cn/attachment/' + peertime_AttachmentID)
+					}
+					let peertime_ExchangeToken = function () {
+						$.ajax({
+							type: 'POST',
+							url: 'https://api.peertime.cn/peertime/V1/P1Integration/ExchangeToken?languageid=1',
+							contentType: 'application/json',
+							data: JSON.stringify({
+								UniqueID: 'drive-' + OC.getCurrentUser().uid,
+								Phone: drive_phone
+							}),
+							success:function (res) {
+								if (res.RetCode !== 0) {
+									OC.Notification.show(t('files', 'Failed to get user token') + " : " + res.ErrorMessage, {type: 'error'});
+									return
+								}
+								peertime_userToken = res.RetData
+								peertime_uniqueIDs = 'drive-' + drive_file_id + '-' + drive_file_mtime;
+								peertime_LinkedAttachmentInfo()
+							}
+						}).fail(function(err) {
+							console.log(err)
+							if (res.RetData !== 0) {
+								OC.Notification.show(t('files', 'Failed to get user token') + " : " + JSON.stringify(err), {type: 'error'});
+							}
+						});
+					}
+					let peertime_LinkedAttachmentInfo = function () {
+						$.ajax({
+							type: 'GET',
+							url: 'https://api.peertime.cn/peertime/V1/P1Integration/LinkedAttachmentInfo?languageid=1&uniqueIDs=' + peertime_uniqueIDs,
+							contentType: 'application/json',
+							headers: {
+								'Usertoken': peertime_userToken
+							},
+							success:function (res) {
+								if (res.RetCode !== 0) {
+									OC.Notification.show(t('files', 'Failed to LinkedAttachmentInfo') + " : " + res.ErrorMessage, {type: 'error'});
+									return
+								}
+								if (res.RetData.length > 0) {
+									peertime_AttachmentID = res.RetData[0]['AttachmentID']
+									AttachmentIDhandler();
+									return
+								}
+								peertime_file_hash = drive_file_hash;
+								peertime_UploadFileWithHash()
+							}
+						}).fail(function(err) {
+							console.log(err)
+							OC.Notification.show(t('files', 'Failed to LinkedAttachmentInfo') + " : " + JSON.stringify(err), {type: 'error'});
+						});
+					}
+					let peertime_UploadFileWithHash = function () {
+						$.ajax({
+							type: 'POST',
+							url: 'https://api.peertime.cn/peertime/V1/SpaceAttachment/UploadFileWithHash?spaceID=1586&folderID=-1&Title=' + b64EncodeUnicode(filename) + '&Description=&Hash=' + peertime_file_hash + '&isFromP1=1',
+							contentType: 'application/json',
+							headers: {
+								'Usertoken': peertime_userToken
+							},
+							success:function (res) {
+								if (res.RetCode === 0) {
+									peertime_AttachmentID = res.RetData.AttachmentID
+									peertime_UpdateAttachmentBindRelation_body = '{"PhoneNumber":"'+drive_phone+'","UniqueID":"'+peertime_uniqueIDs+'","AttachmentID":'+peertime_AttachmentID+'}'
+									peertime_UpdateAttachmentBindRelation()
+									AttachmentIDhandler();
+									return
+								}
+								if (res.RetCode !== -6002) {
+									OC.Notification.show(t('files', 'Failed to UploadFileWithHash') + " : " + res.ErrorMessage, {type: 'error'});
+									return
+								}
+								peertime_UploadFileWithHash_FileID = res.RetData.FileID
+								peertime_UploadFileWithHash_Path = res.RetData.Path
+								let peertime_file_ext = filename.substr(filename.lastIndexOf('.') + 1)
+								let peertime_file_name = filename.replace(/\.[^/.]+$/, "")
+
+								peertime_startSending_body = '{"Bucket":{"ServiceProviderId":2,"RegionName":"oss-cn-shanghai","BucketName":"peertime"},"Config":{"Retry":{"MaxTimes":1,"MinutesOfIntervalTime":2}},"SourceUrl":"https:\\/\\/drive_file.kloud.cn\\/'+OC.getCurrentUser().uid+'\\/files\\' + drive_dir + '/' + filename + '","DocumentType":"' + peertime_file_ext + '","TargetFolderKey":"' + peertime_UploadFileWithHash_Path + '","IgnoreConverting":false,"EnableExtractingImagesFromPDF":false,"FileName":"' + peertime_file_name + '"}'
+								peertime_startSending()
+							}
+						}).fail(function(err) {
+							console.log(err)
+							OC.Notification.show(t('files', 'Failed to UploadFileWithHash') + " : " + JSON.stringify(err), {type: 'error'});
+						});
+					}
+					let peertime_startSending = function () {
+						$.ajax({
+							type: 'POST',
+							url: 'https://livedoc.peertime.cn/TxLiveDocumentApi/api/startSending',
+							contentType: 'application/json',
+							headers: {
+								'Authorization': 'Bearer 02912174-3dcb-49eb-b9fa-6d90b390d495'
+							},
+							data: peertime_startSending_body,
+							success: function (res) {
+								if (res.Success !== true) {
+									OC.Notification.show(t('files', 'Failed to startSending') + " : " + res.Error.ErrorMessage, {type: 'error'});
+									return
+								}
+								peertime_QuerySending_token = res.Data.Token
+								peertime_QuerySending()
+							}
+						}).fail(function(err) {
+							console.log(err)
+							OC.Notification.show(t('files', 'Failed to startSending') + " : " + JSON.stringify(err), {type: 'error'});
+						});
+					}
+					let peertime_QuerySending = function () {
+						$.ajax({
+							type: 'GET',
+							url: 'https://livedoc.peertime.cn/TxLiveDocumentApi/api/querySending?token=' + peertime_QuerySending_token,
+							contentType: 'application/json',
+							headers: {
+								'Authorization': 'Bearer 02912174-3dcb-49eb-b9fa-6d90b390d495'
+							},
+							success: function (res) {
+								let peertime_ppc = document.querySelector(".peertime-progress-pie-chart")
+								if (res.Data.FinishPercent === 100) {
+									peertime_ppc.style.display = 'none'
+									let peertime_queryConverting_FileName = res.Data.Result.FileName
+									let peertime_queryConverting_FileSize = res.Data.Result.FileSize
+									let peertime_queryConverting_PageCount = res.Data.Result.Count
+									peertime_UploadNewFile_body = '{"Title":"'+filename+'","SpaceID":1586,"Description":"'+filename+'","Hash":"'+peertime_file_hash+'","FileID":' + peertime_UploadFileWithHash_FileID + ',"PageCount":'+peertime_queryConverting_PageCount+',"FileName":"'+peertime_queryConverting_FileName+'","FileSize":'+peertime_queryConverting_FileSize+',"PdfFileSize":0,"FileFrom":"","FileFromID":"","FileFromLink":"","FileFromType":"","FileFromVersion":"","FileFromAccount":""}'
+									peertime_UploadNewFile()
+								} else {
+									if (res.Data.FailureMessage !== undefined) {
+										OC.Notification.show(t('files', 'Failed to querySending') + " : " + res.Data.FailureMessage, {type: 'error'});
+										peertime_ppc.style.display = 'none'
+									} else {
+										if (res.Data.FinishPercent > peertime_FinishPercent) {
+											peertime_FinishPercent = res.Data.FinishPercent
+											let peertime_deg = (360 * peertime_FinishPercent) / 100
+
+											if (peertime_FinishPercent > 50) {
+												peertime_ppc.classList.add("peertime-gt-50")
+											}
+
+											let progressFill = document.querySelector(".peertime-ppc-progress-fill")
+											progressFill.style.transform = "rotate(" + peertime_deg + "deg)"
+
+											var percentsSpan = document.querySelector(".peertime-ppc-percents span")
+											percentsSpan.innerHTML = peertime_FinishPercent + "%"
+											peertime_ppc.style.display = 'block'
+										}
+										setTimeout(function () {
+											peertime_QuerySending()
+										}, 1000)
+									}
+								}
+							}
+						}).fail(function(err) {
+							console.log(err)
+							OC.Notification.show(t('files', 'Failed to querySending') + " : " + JSON.stringify(err), {type: 'error'});
+						});
+					}
+					let peertime_UploadNewFile = function () {
+						$.ajax({
+							type: 'POST',
+							url: 'https://api.peertime.cn/peertime/V1/SpaceAttachment/UploadNewFile',
+							contentType: 'application/json',
+							headers: {
+								'Usertoken': peertime_userToken
+							},
+							data: peertime_UploadNewFile_body,
+							success: function (res) {
+								if (res.RetCode !== 0) {
+									OC.Notification.show(t('files', 'Failed to UploadNewFile') + " : " + res.ErrorMessage, {type: 'error'});
+									return
+								}
+								peertime_AttachmentID = res.RetData.AttachmentID
+								peertime_UpdateAttachmentBindRelation_body = '{"PhoneNumber":"+'+drive_phone+'","UniqueID":"'+peertime_uniqueIDs+'","AttachmentID":'+peertime_AttachmentID+'}'
+								peertime_UpdateAttachmentBindRelation()
+								AttachmentIDhandler();
+							}
+						}).fail(function(err) {
+							console.log(err)
+							OC.Notification.show(t('files', 'Failed to UploadNewFile') + " : " + JSON.stringify(err), {type: 'error'});
+						});
+					}
+					let peertime_UpdateAttachmentBindRelation = function () {
+						$.ajax({
+							type: 'POST',
+							url: 'https://api.peertime.cn/peertime/V1/P1Integration/UpdateAttachmentBindRelation?languageid=1',
+							contentType: 'application/json',
+							headers: {
+								'Usertoken': peertime_userToken
+							},
+							data: peertime_UpdateAttachmentBindRelation_body,
+						})
+					}
+
+					if (drive_phone !== '') {
+						peertime_ExchangeToken()
+					} else {
+						$.ajax({
+							type: 'POST',
+							url: OC.generateUrl('apps/integration_kloud/getPhone'),
+							contentType: 'application/json',
+							success:function (res) {
+								drive_phone = res.message
+								peertime_ExchangeToken()
+							}
+						}).fail(function(err) {
+							OC.Notification.show(err.responseJSON.message, {type: 'error'});
+						});
+					}
+
 				}
 			});
 

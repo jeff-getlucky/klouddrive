@@ -1,19 +1,28 @@
 <?php
-
 namespace OCA\KloudIntegration\Controller;
 
 use OCA\KloudIntegration\AppInfo\Application;
+use OCP\Accounts\IAccountManager;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\Files\IRootFolder;
 use OCP\IRequest;
+use OCP\IUserSession;
+use OCP\L10N\IFactory;
 use Sabre\VObject\UUIDUtil;
 
 class KloudController extends Controller
 {
-    public function __construct(string $appName, IRequest $request)
+    private IUserSession $userSession;
+    private IAccountManager $accountManager;
+    private IFactory $l10nFactory;
+    public function __construct(string $appName, IRequest $request, IUserSession $userSession, IAccountManager $accountManager, IFactory $l10nFactory, IRootFolder $rootFolder)
     {
         parent::__construct($appName, $request);
+        $this->userSession = $userSession;
+        $this->accountManager = $accountManager;
+        $this->l10nFactory = $l10nFactory;
     }
 
     /**
@@ -93,6 +102,48 @@ class KloudController extends Controller
         $this->JsonReturn(true, '');
     }
 
+
+    /**
+     * @NoCSRFRequired
+     * @PublicPage
+     * @return DataResponse
+     */
+    public function sendToKloudMeeting()
+    {
+
+        $user = $this->userSession->getUser();
+		if (!$user) {
+            return new DataResponse(['message' => $this->l10nFactory->get('files')->t('Access Forbidden')], Http::STATUS_FORBIDDEN);
+		}
+        $account = $this->accountManager->getAccount($user);
+		$userId = $user->getUID();
+        $phone = $account->getProperty(IAccountManager::PROPERTY_PHONE)->getValue();
+		if (!$phone) {
+            return new DataResponse(['message' => $this->l10nFactory->get('files')->t('Mobile phone number is required')], Http::STATUS_PRECONDITION_FAILED);
+		}
+        return new DataResponse(['message' => $this->l10nFactory->get('files')->t('Sent to Kloud meeting')], Http::STATUS_OK);
+        $file_id = $_POST['file_id'];
+		exit;
+    }
+
+    /**
+     * @NoCSRFRequired
+     * @PublicPage
+     * @return DataResponse
+     */
+    public function getPhone()
+    {
+        $user = $this->userSession->getUser();
+        if (!$user) {
+            return new DataResponse(['message' => $this->l10nFactory->get('files')->t('Access Forbidden')], Http::STATUS_UNAUTHORIZED);
+        }
+        $account = $this->accountManager->getAccount($user);
+        $phone = $account->getProperty(IAccountManager::PROPERTY_PHONE)->getValue();
+        if (!$phone) {
+            return new DataResponse(['message' => $this->l10nFactory->get('files')->t('Mobile phone number is required')], Http::STATUS_PRECONDITION_FAILED);
+        }
+        return new DataResponse(['message' => $phone], Http::STATUS_OK);
+    }
 
     private function JsonReturn($success, $data){
         header('Content-Type: application/json');

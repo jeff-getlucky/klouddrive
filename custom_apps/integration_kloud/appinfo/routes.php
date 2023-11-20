@@ -17,5 +17,7 @@ return [
 		['name' => 'Kloud#regenerate', 'url' => '/regenerate', 'verb' => 'POST'],
 		['name' => 'Kloud#auth', 'url' => '/auth', 'verb' => 'GET'],
 		['name' => 'Kloud#save', 'url' => '/save', 'verb' => 'POST'],
+		['name' => 'Kloud#sendToKloudMeeting', 'url' => '/sendToKloudMeeting', 'verb' => 'POST'],
+		['name' => 'Kloud#getPhone', 'url' => '/getPhone', 'verb' => 'POST'],
 	],
 ];

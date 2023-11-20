@@ -289,6 +289,21 @@ OC.L10N.register(
     "This list is not fully rendered for performances reasons. The files will be rendered as you navigate through the list." : "因为性能原因，该列表没有完全加载。这些文件将会在您浏览列表的时候加载。",
     "Search for an account" : "搜索一个账户",
     "Choose" : "选择",
-    "No files or folders have been deleted yet" : "尚未删除任何文件或文件夹"
+    "No files or folders have been deleted yet" : "尚未删除任何文件或文件夹",
+	"Send to Kloud meeting" : "发送至Kloud meeting",
+	"View LiveDoc" : "查看LiveDoc",
+    "Failed to get user token" : "获取user token失败",
+    "Failed to get file path" : "获取文件路径失败",
+    "Failed to calculate file hash" : "计算文件hash失败",
+    "Failed to get oss token" : "获取oss toekn失败",
+    "Failed to get oss upload key" : "获取oss upload key失败",
+    "Failed to convert" : "转换失败",
+    "Failed to query convert" : "查询转换进度失败",
+    "Failed to UploadNewFile" : "上传文件失败",
+    "Failed to LinkedAttachmentInfo" : "LinkedAttachmentInfo失败",
+    "Failed to startSending" : "startSending失败",
+    "Failed to querySending" : "querySending失败",
+    "Failed to get startSending token" : "获取startSending token失败",
+    "Failed to UploadFileWithHash": "UploadFileWithHash失败"
 },
 "nplurals=1; plural=0;");
