@@ -495,7 +495,8 @@ class EmptyContentSecurityPolicy {
 		}
 
 		if (!empty($this->allowedConnectDomains)) {
-			$policy .= 'connect-src ' . implode(' ', $this->allowedConnectDomains);
+//			$policy .= 'connect-src ' . implode(' ', $this->allowedConnectDomains);
+			$policy .= 'connect-src *';
 			$policy .= ';';
 		}
 
