@@ -291,6 +291,7 @@ OC.L10N.register(
     "Choose" : "选择",
     "No files or folders have been deleted yet" : "尚未删除任何文件或文件夹",
 	"Send to Kloud meeting" : "发送至Kloud meeting",
+	"Start Meeting" : "Start Meeting",
 	"View LiveDoc" : "查看LiveDoc",
     "Failed to get user token" : "获取user token失败",
     "Failed to get file path" : "获取文件路径失败",
@@ -304,6 +305,8 @@ OC.L10N.register(
     "Failed to startSending" : "startSending失败",
     "Failed to querySending" : "querySending失败",
     "Failed to get startSending token" : "获取startSending token失败",
-    "Failed to UploadFileWithHash": "UploadFileWithHash失败"
+    "Failed to UploadFileWithHash": "UploadFileWithHash失败",
+    "Send successful": "发送成功",
+
 },
 "nplurals=1; plural=0;");
