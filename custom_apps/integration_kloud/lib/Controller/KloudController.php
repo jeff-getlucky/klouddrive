@@ -102,6 +102,58 @@ class KloudController extends Controller
         $this->JsonReturn(true, '');
     }
 
+	/**
+	 * @NoCSRFRequired
+	 * @PublicPage
+	 * @return DataResponse
+	 */
+	public function downloadFile()
+	{
+		if (!isset($_GET['file_id'])) {
+			http_response_code(400);
+			$this->JsonReturn(false, 'Missing parameter file_id');
+		}
+		if (!isset($_GET['uid'])) {
+			http_response_code(400);
+			$this->JsonReturn(false, 'Missing parameter uid');
+		}
+		if (!isset($_GET['token'])) {
+			http_response_code(400);
+			$this->JsonReturn(false, 'Missing parameter token');
+		}
+
+		$file_id = addslashes($_GET['file_id']);
+		$uid = addslashes($_GET['uid']);
+		$token = addslashes($_GET['token']);
+
+		$qb = \OCP\Server::get(\OCP\IDBConnection::class)->getQueryBuilder();
+		$result = $qb->select(['etag', 'path', 'name', 'size'])
+			->from('filecache')
+			->where($qb->expr()->eq('file_id', $qb->createNamedParameter($file_id)))
+			->where($qb->expr()->eq('etag', $qb->createNamedParameter($token)))
+			->executeQuery();
+		if ($file_info = $result->fetch()) {
+			$file_path = \OC::$server->getConfig()->getSystemValue('datadirectory', '') . DIRECTORY_SEPARATOR . $uid . DIRECTORY_SEPARATOR . $file_info['path'];
+			if (!is_file($file_path)) {
+				http_response_code(404);
+				$this->JsonReturn(false, 'file not found');
+			}
+			$file_name = $file_info['name'];
+//			$file_size = filesize($file_path);
+			$file_size = $file_info['size'];
+			$file = fopen($file_path,"r");
+			header("Content-Type: application/octet-stream");
+			header("Accept-Ranges: bytes");
+			header("Accept-Length: " . $file_size);
+			header("Content-Disposition: attachment; filename=" . $file_name);
+			echo fread($file, $file_size);
+			fclose($file);
+		} else {
+			http_response_code(404);
+			$this->JsonReturn(false, 'file not found');
+		}
+	}
+
 
     /**
      * @NoCSRFRequired

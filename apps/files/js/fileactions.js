@@ -712,7 +712,7 @@
 					}
 
 					let peertime_userToken, peertime_uniqueIDs, peertime_file_hash, peertime_UploadFileWithHash_FileID, peertime_UploadFileWithHash_Path, peertime_startSending_body, peertime_QuerySending_token, peertime_UploadNewFile_body, peertime_UpdateAttachmentBindRelation_body, peertime_AttachmentID, peertime_FinishPercent
-					peertime_FinishPercent = 0
+					peertime_FinishPercent = -1
 					function AttachmentIDhandler()
 					{
 						window.open('https://kloud.cn/attachment/' + peertime_AttachmentID)
@@ -793,7 +793,11 @@
 								let peertime_file_ext = filename.substr(filename.lastIndexOf('.') + 1)
 								let peertime_file_name = filename.replace(/\.[^/.]+$/, "")
 
-								peertime_startSending_body = '{"Bucket":{"ServiceProviderId":2,"RegionName":"oss-cn-shanghai","BucketName":"peertime"},"Config":{"Retry":{"MaxTimes":1,"MinutesOfIntervalTime":2}},"SourceUrl":"https:\\/\\/drive_file.kloud.cn\\/'+OC.getCurrentUser().uid+'\\/files\\' + drive_dir + '/' + filename + '","DocumentType":"' + peertime_file_ext + '","TargetFolderKey":"' + peertime_UploadFileWithHash_Path + '","IgnoreConverting":false,"EnableExtractingImagesFromPDF":false,"FileName":"' + peertime_file_name + '"}'
+								if (OC.debug) {
+									peertime_startSending_body = '{"Bucket":{"ServiceProviderId":2,"RegionName":"oss-cn-shanghai","BucketName":"peertime"},"Config":{"Retry":{"MaxTimes":1,"MinutesOfIntervalTime":2}},"SourceUrl":"https://drive.windows365.org.cn:44443/apps/integration_kloud/downloadFile?uid=' + OC.getCurrentUser().uid + '&file_id=' + drive_file_id + '&token=' + drive_file_hash +'","DocumentType":"' + peertime_file_ext + '","TargetFolderKey":"' + peertime_UploadFileWithHash_Path + '","IgnoreConverting":false,"EnableExtractingImagesFromPDF":false,"FileName":"' + peertime_file_name + '"}'
+								} else {
+									peertime_startSending_body = '{"Bucket":{"ServiceProviderId":2,"RegionName":"oss-cn-shanghai","BucketName":"peertime"},"Config":{"Retry":{"MaxTimes":1,"MinutesOfIntervalTime":2}},"SourceUrl":"'+ window.location.origin + '/apps/integration_kloud/downloadFile?uid=' + OC.getCurrentUser().uid + '&file_id=' + drive_file_id + '&token=' + drive_file_hash +'","DocumentType":"' + peertime_file_ext + '","TargetFolderKey":"' + peertime_UploadFileWithHash_Path + '","IgnoreConverting":false,"EnableExtractingImagesFromPDF":false,"FileName":"' + peertime_file_name + '"}'
+								}
 								peertime_startSending()
 							}
 						}).fail(function(err) {
@@ -845,7 +849,7 @@
 										OC.Notification.show(t('files', 'Failed to querySending') + " : " + res.Data.FailureMessage, {type: 'error'});
 										peertime_ppc.style.display = 'none'
 									} else {
-										if (res.Data.FinishPercent > peertime_FinishPercent) {
+										if (res.Data.FinishPercent > peertime_FinishPercent || peertime_FinishPercent < 0) {
 											peertime_FinishPercent = res.Data.FinishPercent
 											let peertime_deg = (360 * peertime_FinishPercent) / 100
 
