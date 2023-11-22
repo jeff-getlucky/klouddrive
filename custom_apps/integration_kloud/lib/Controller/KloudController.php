@@ -147,7 +147,7 @@ class KloudController extends Controller
 			header("Content-Disposition: attachment; filename=" . $file_name);
 
             $read_buffer = 4096;
-            $handle = fopen($file_name, 'rb');
+            $handle = fopen($file_path, 'rb');
 
             $sum_buffer = 0;
 
