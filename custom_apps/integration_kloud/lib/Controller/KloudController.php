@@ -139,21 +139,51 @@ class KloudController extends Controller
 				$this->JsonReturn(false, 'file not found');
 			}
 			$file_name = $file_info['name'];
-//			$file_size = filesize($file_path);
 			$file_size = $file_info['size'];
-			$file = fopen($file_path,"r");
+
 			header("Content-Type: application/octet-stream");
 			header("Accept-Ranges: bytes");
 			header("Accept-Length: " . $file_size);
 			header("Content-Disposition: attachment; filename=" . $file_name);
-			echo fread($file, $file_size);
-			fclose($file);
+
+            $read_buffer = 4096;
+            $handle = fopen($file_name, 'rb');
+
+            $sum_buffer = 0;
+
+            while (!feof($handle) && $sum_buffer < $file_size) {
+                echo fread($handle, $read_buffer);
+                $sum_buffer += $read_buffer;
+            }
+            fclose($handle);
 		} else {
 			http_response_code(404);
 			$this->JsonReturn(false, 'file not found');
 		}
 	}
 
+	/**
+	 * @NoCSRFRequired
+	 * @PublicPage
+	 * @return DataResponse
+	 */
+	public function test()
+	{
+
+//		$qb = \OCP\Server::get(\OCP\IDBConnection::class)->getQueryBuilder();
+//		$result = $qb->select('configvalue')
+//			->from('preferences')
+//			->where($qb->expr()->eq('appid', $qb->createNamedParameter('files')))
+//			->executeQuery();
+//		$quota_sum = 0;
+//		while ($row = $result->fetch()) {
+//			$bytesQuota = \OC_Helper::computerFileSize($row['configvalue']);
+//			$quota_sum += $bytesQuota;
+//		}
+////		$quota = \OC_Helper::humanFileSize($quota_sum);
+//
+//		$this->JsonReturn(true, $quota_sum);
+	}
 
     /**
      * @NoCSRFRequired

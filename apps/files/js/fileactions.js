@@ -852,6 +852,7 @@
 
 	let peertime_token, peertime_uniqueIDs = ''
 	//todo  应该其他方式实现  不应该用定时  而且token过期也没处理
+	let peertime_is_CheckUserInMeeting = false
 	setInterval(function () {
 		if (drive_phone == '') {
 			return
@@ -865,18 +866,38 @@
 					'Usertoken': peertime_token
 				},
 				success:function (res) {
-					if (res.RetCode === 0 && res.RetData === true) {
-						OCA.Files.fileActions.registerAction({
-							name: 'SendtoKloudmeeting',
-							displayName: t('files', 'Send to Kloud meeting'),
-							mime: 'file',
-							order: -1000,
-							permissions: OC.PERMISSION_READ,
-							iconClass: 'icon-kloud',
-							actionHandler: function (filename, context) {
-								kloud(filename, context, 'SendtoKloudmeeting')
+					if (res.RetCode === 0) {
+						if (res.RetData === true) {
+							if (!peertime_is_CheckUserInMeeting) {
+								peertime_is_CheckUserInMeeting = true
+								OCA.Files.fileActions.registerAction({
+									name: 'SendtoKloudmeeting',
+									displayName: t('files', 'Send to Kloud meeting'),
+									mime: 'file',
+									order: -1000,
+									permissions: OC.PERMISSION_READ,
+									iconClass: 'icon-kloud',
+									actionHandler: function (filename, context) {
+										kloud(filename, context, 'SendtoKloudmeeting')
+									}
+								})
 							}
-						})
+						} else {
+							if (peertime_is_CheckUserInMeeting) {
+								//hide action
+								peertime_is_CheckUserInMeeting = false
+								OCA.Files.fileActions.registerAction({
+									name: 'SendtoKloudmeeting',
+									displayName: t('files', 'Send to Kloud meeting'),
+									mime: 'file',
+									order: -1000,
+									permissions: OC.PERMISSION_READ,
+									iconClass: 'icon-kloud',
+									type: OCA.Files.FileActions.TYPE_INLINE,
+									shouldRender() {return false}
+								})
+							}
+						}
 					}
 				}
 			})
@@ -1074,9 +1095,19 @@
 					'Authorization': 'Bearer 02912174-3dcb-49eb-b9fa-6d90b390d495'
 				},
 				success: function (res) {
+					let peertime_div = '    <div class="peertime-progress-pie-chart" data-percent="0" style="display:none;z-index: 9999;position: absolute;margin: auto;left: 50%;top: 50%;transform: translate(-50%,-50%)">\n' +
+						'        <div class="peertime-ppc-progress">\n' +
+						'            <div class="peertime-ppc-progress-fill"></div>\n' +
+						'        </div>\n' +
+						'        <div class="peertime-ppc-percents">\n' +
+						'            <div class="peertime-pcc-percents-wrapper">\n' +
+						'                <span>%</span>\n' +
+						'            </div>\n' +
+						'        </div>\n' +
+						'    </div>'
 					let peertime_ppc = document.querySelector(".peertime-progress-pie-chart")
 					if (res.Data.FinishPercent === 100) {
-						peertime_ppc.style.display = 'none'
+						$("#peertime-progress").html(peertime_div)
 						let peertime_queryConverting_FileName = res.Data.Result.FileName
 						let peertime_queryConverting_FileSize = res.Data.Result.FileSize
 						let peertime_queryConverting_PageCount = res.Data.Result.Count
