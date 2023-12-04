@@ -301,6 +301,11 @@
     "Failed to UploadNewFile" : "上传文件失败",
     "Failed to LinkedAttachmentInfo" : "LinkedAttachmentInfo失败",
     "Failed to startSending" : "startSending失败",
-    "Failed to get startSending token" : "获取startSending token失败"
+    "Failed to get startSending token" : "获取startSending token失败",
+    "LiveSync" : "音想",
+    "Title" : "标题",
+    "Start LiveSync Meeting Now" : "开始实时音想会议",
+    "No" : "否",
+    "Yes" : "是"
 },"pluralForm" :"nplurals=1; plural=0;"
 }

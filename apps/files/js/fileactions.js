@@ -15,13 +15,26 @@
 	 * @constructs FileActions
 	 * @memberof OCA.Files
 	 */
-	var drive_phone = '';
+
+	let peertime_userToken, peertime_uniqueIDs, drive_phone = ''
 	$.ajax({
 		type: 'POST',
 		url: OC.generateUrl('apps/integration_kloud/getPhone'),
 		contentType: 'application/json',
 		success:function (res) {
 			drive_phone = res.message
+			$.ajax({
+				type: 'POST',
+				url: 'https://api.peertime.cn/peertime/V1/P1Integration/ExchangeToken?languageid=1',
+				contentType: 'application/json',
+				data: JSON.stringify({
+					UniqueID: 'drive-' + OC.getCurrentUser().uid,
+					Phone: drive_phone
+				}),
+				success:function (res) {
+					peertime_userToken = res.RetData
+				}
+			})
 		}
 	})
 	var FileActions = function() {
@@ -390,10 +403,21 @@
 				$trigger.removeClass('open');
 				$trigger.attr('aria-expanded', 'false');
 				menu.remove();
+				$('#sync_menu').hide()
 			});
 
 			context.$file.addClass('mouseOver');
 			menu.show(context);
+			// if (drive_phone === '') {
+			// 	$('.action-viewlivedoc-container').addClass('hidden');
+			// 	$('.action-startmeeting-container').addClass('hidden');
+			// 	$('.action-sync-container').addClass('hidden');
+			// }
+			$('.action-sendtokloudmeeting-container').addClass('hidden');
+			if (context.$file.attr('data-type') !== 'dir') {
+				getIsInMeeting();
+				getSyncList(fileName, context);
+			}
 		},
 
 		/**
@@ -690,6 +714,27 @@
 			});
 
 			this.registerAction({
+				name: 'Sync',
+				displayName: t('files', 'Sync'),
+				mime: 'file',
+				order: -998,
+				permissions: OC.PERMISSION_READ,
+				iconClass: 'icon-kloud',
+			});
+
+			this.registerAction({
+				name: 'SendtoKloudmeeting',
+				displayName: t('files', 'Send to Kloud meeting'),
+				mime: 'file',
+				order: -999,
+				permissions: OC.PERMISSION_READ,
+				iconClass: 'icon-kloud',
+				actionHandler: function (filename, context) {
+					kloud(filename, context, 'SendtoKloudmeeting')
+				}
+			});
+
+			this.registerAction({
 				name: 'ViewLiveDoc',
 				displayName: t('files', 'View LiveDoc'),
 				mime: 'file',
@@ -850,80 +895,77 @@
 	};
 
 
-	let peertime_token, peertime_uniqueIDs = ''
-	//todo  应该其他方式实现  不应该用定时  而且token过期也没处理
-	let peertime_is_CheckUserInMeeting = false
-	setInterval(function () {
+	function getIsInMeeting()
+	{
 		if (drive_phone == '') {
 			return
 		}
-		let peertime_CheckUserInMeeting = function () {
-			$.ajax({
-				type: 'GET',
-				url: 'https://api.peertime.cn/peertime/V1/P1Integration/CheckUserInMeeting?languageid=1',
-				contentType: 'application/json',
-				headers: {
-					'Usertoken': peertime_token
-				},
-				success:function (res) {
-					if (res.RetCode === 0) {
-						if (res.RetData === true) {
-							if (!peertime_is_CheckUserInMeeting) {
-								peertime_is_CheckUserInMeeting = true
-								OCA.Files.fileActions.registerAction({
-									name: 'SendtoKloudmeeting',
-									displayName: t('files', 'Send to Kloud meeting'),
-									mime: 'file',
-									order: -1000,
-									permissions: OC.PERMISSION_READ,
-									iconClass: 'icon-kloud',
-									actionHandler: function (filename, context) {
-										kloud(filename, context, 'SendtoKloudmeeting')
-									}
-								})
-							}
-						} else {
-							if (peertime_is_CheckUserInMeeting) {
-								//hide action
-								peertime_is_CheckUserInMeeting = false
-								OCA.Files.fileActions.registerAction({
-									name: 'SendtoKloudmeeting',
-									displayName: t('files', 'Send to Kloud meeting'),
-									mime: 'file',
-									order: -1000,
-									permissions: OC.PERMISSION_READ,
-									iconClass: 'icon-kloud',
-									type: OCA.Files.FileActions.TYPE_INLINE,
-									shouldRender() {return false}
-								})
-							}
-						}
+		$.ajax({
+			type: 'GET',
+			url: 'https://api.peertime.cn/peertime/V1/P1Integration/CheckUserInMeeting?languageid=1',
+			contentType: 'application/json',
+			headers: {
+				'Usertoken': peertime_userToken
+			},
+			success:function (res) {
+				if (res.RetCode === 0) {
+					if (res.RetData === true) {
+						$('.action-sendtokloudmeeting-container').removeClass('hidden');
+					} else {
+						$('.action-sendtokloudmeeting-container').addClass('hidden');
 					}
 				}
-			})
+			}
+		})
+	}
+
+
+	function getSyncList(filename, context)
+	{
+		if (drive_phone == '') {
+			return
 		}
-		if (!peertime_token) {
-			$.ajax({
-				type: 'POST',
-				url: 'https://api.peertime.cn/peertime/V1/P1Integration/ExchangeToken?languageid=1',
-				contentType: 'application/json',
-				data: JSON.stringify({
-					UniqueID: 'drive-' + OC.getCurrentUser().uid,
-					Phone: drive_phone
-				}),
-				success:function (res) {
-					peertime_token = res.RetData
-					peertime_CheckUserInMeeting()
+		$('.action-sync-container').mouseenter(function () {
+			$('#sync_menu_ul').html("")
+			let sync_menu_pos = $('.action-sync-container').offset();
+			// $('#sync_menu_ul').append('<li>\n' +
+			// 	'            <a href="#" id="startlivesync" class="menuitem action permanent">\n' +
+			// 	'                <span class="icon icon-kloud"></span>\n' +
+			// 	'                <span>' + t('files', 'Start LiveSync') + '</span>\n' +
+			// 	'            </a>\n' +
+			// 	'        </li>')
+			// $('#startlivesync').on('click', function () {
+			// 	kloud(filename, context, 'StartLiveSync')
+			// })
+			$('#sync_menu').css('left', sync_menu_pos.left + $('.action-sync-container').width()).css('top', sync_menu_pos.top + $('.action-sync-container').height() - ($('.action-sync-container').height())).css('width',  $('.action-sync-container').width() + 40);
+			// $('#sync_menu').show();
+			kloud(filename, context, 'ViewSync')
+		}).mouseleave(function () {
+			$('#sync_menu').mouseleave(function () {
+				if ($(".action-sync-container").length > 0) {
+					if (!$("#sync_menu").is(":hover") && !$(".action-sync-container").is(":hover")) {
+						$('#sync_menu').hide();
+					}
+				} else {
+					$('#sync_menu').hide();
 				}
 			})
-		} else {
-			peertime_CheckUserInMeeting()
-		}
-	}, 5000)
+			setTimeout(function () {
+				if ($(".action-sync-container").length > 0) {
+					if (!$("#sync_menu").is(":hover") && !$(".action-sync-container").is(":hover")) {
+						$('#sync_menu').hide();
+					}
+				} else {
+					$('#sync_menu').hide();
+				}
+			}, 1000);
+		})
+	}
+
 
 	function kloud(filename, context, action)
 	{
-		let drive_dir, drive_file_id, drive_file_mtime, drive_file_hash, peertime_AttachmentID, AttachmentIDhandler
+		let drive_dir, drive_file_id, drive_file_mtime, drive_file_hash, drive_mounttype, peertime_AttachmentID, AttachmentIDhandler
 
 		if (action === 'StartMeeting') {
 			AttachmentIDhandler = function () {
@@ -958,6 +1000,140 @@
 				});
 			}
 
+		} else if (action === 'StartLiveSync') {
+			AttachmentIDhandler = function () {
+				//todo  companyId是写死的  但暂时不影响  因为不同companyId下的userid相同
+				$.ajax({
+					type: 'GET',
+					// url: 'https://api.peertime.cn/peertime/V1/User/GetUserCompanyInfo?companyId=3255',
+					url: 'https://api.peertime.cn/peertime/V1/User/UserProfile',
+					contentType: 'application/json',
+					headers: {
+						'Usertoken': peertime_userToken
+					},
+					success:function (res) {
+						if (res.RetCode !== 0) {
+							OC.Notification.show(t('files', 'Failed to GetUserCompanyInfo') + " : " + res.ErrorMessage, {type: 'error'});
+							return
+						} else {
+							let peertime_userid = res.RetData.UserID
+							// let peertime_role = res.RetData.RoleID
+							let peertime_role = 2
+							// let peertime_companyid = res.RetData.CompanyID
+							let peertime_companyid = 3255
+							let peertime_fullname = res.RetData.FullName
+							$('#livesync_name').val(peertime_fullname + "'s LiveSync")
+							$('#livesync_dialog')[0].showModal();
+							$('#livesync_modal').show();
+							$('#livesync_close').off('click').on('click', function () {
+								$('#livesync_dialog')[0].close();
+								$('#livesync_modal').hide();
+							})
+							$('#livesync_no').off('click').on('click', function () {
+								$('#livesync_dialog')[0].close();
+								$('#livesync_modal').hide();
+							})
+							$('#livesync_yes').off('click').on('click', function () {
+								$('#livesync_yes').attr('disabled', 'disabled')
+								$.ajax({
+									type: 'POST',
+									url: 'https://wss.peertime.cn/MeetingServer/livesync/create_live_sync',
+									contentType: 'application/json',
+									headers: {
+										'Usertoken': peertime_userToken
+									},
+									data: JSON.stringify({
+										attachmentIds: [peertime_AttachmentID],
+										companyId: peertime_companyid,
+										members: [
+											{
+												memberId: peertime_userid,
+												role: peertime_role,
+											}
+										],
+										startMeetingNow: $('#livesync_startMeetingNow').is(":checked"),
+										title: peertime_fullname + "'s LiveSync",
+										sourceFromId: 8
+									}),
+									success:function (res) {
+										$('#livesync_yes').removeAttr('disabled')
+										$('#livesync_dialog')[0].close();
+										$('#livesync_modal').hide();
+										if (res.code !== 0) {
+											OC.Notification.show(t('files', 'Failed to create_live_sync') + " : " + res.msg, {type: 'error'});
+											return
+										} else {
+											let mainLiveSyncId = res.data.mainLiveSyncId
+											let subMeetingId = res.data.subMeetingId
+											if (!subMeetingId) {
+												window.open('https://kloud.cn/livesync/' + mainLiveSyncId)
+											} else if (subMeetingId) {
+												window.open('https://kloud.cn/livesync/' + subMeetingId)
+											} else {
+												OC.Notification.show(t('files', 'Failed to create_live_sync') + " : " + JSON.stringify(err), {type: 'error'});
+											}
+										}
+									}
+								}).fail(function(err) {
+									$('#livesync_yes').removeAttr('disabled')
+									$('#livesync_dialog')[0].close();
+									$('#livesync_modal').hide();
+									console.log(err)
+									OC.Notification.show(t('files', 'Failed to create_live_sync') + " : " + JSON.stringify(err), {type: 'error'});
+								});
+							})
+						}
+					}
+				}).fail(function(err) {
+					console.log(err)
+					OC.Notification.show(t('files', 'Failed to GetUserCompanyInfo') + " : " + JSON.stringify(err), {type: 'error'});
+				});
+
+			}
+		} else if (action === 'ViewSync') {
+			AttachmentIDhandler = function () {
+				$.ajax({
+					type: 'GET',
+					url: 'https://api.peertime.cn/peertime/V1/Soundtrack/DocNoteSyncList?attachmentIds=' + peertime_AttachmentID + '&isPublic=0&includeVideoSync=0',
+					contentType: 'application/json',
+					success:function (res) {
+						if (res.RetCode !== 0) {
+							OC.Notification.show(t('files', 'Failed to DocNoteSyncList') + " : " + res.ErrorMessage, {type: 'error'});
+							return
+						} else {
+							if (res.RetData.length > 0) {
+								$('#sync_menu_ul').html('');
+								// $('#livesync_menu_ul').append('<li>\n' +
+								// 	'            <a href="#" id="startlivesync" class="menuitem action permanent">\n' +
+								// 	'                <span class="icon icon-kloud"></span>\n' +
+								// 	'                <span>' + t('files', 'Start LiveSync') + '</span>\n' +
+								// 	'            </a>\n' +
+								// 	'        </li>')
+								// $('#startlivesync').on('click', function () {
+								// 	kloud(filename, context, 'StartLiveSync')
+								// })
+								res.RetData.forEach(function(item) {
+									if (item.Title === '') {
+										item.Title = t('files', 'Unnamed Sync')
+									}
+									$('#sync_menu_ul').append('<li>\n' +
+										'            <a href="https://kloud.cn/sync/' + item.SoundtrackID + '" target="_blank"  class="menuitem action permanent">\n' +
+										'                <span class="icon icon-kloud"></span>\n' +
+										'                <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' + item.Title + '</span>\n' +
+										'            </a>\n' +
+										'        </li>')
+								})
+								$('#sync_menu').show();
+							} else {
+								$('#sync_menu').hide();
+							}
+						}
+					}
+				}).fail(function(err) {
+					console.log(err)
+					OC.Notification.show(t('files', 'Failed to DocNoteSyncList') + " : " + JSON.stringify(err), {type: 'error'});
+				});
+			}
 		} else {
 			OC.Notification.show('Error', {type: 'error'});
 			return
@@ -968,6 +1144,7 @@
 			drive_file_id = context.$file.attr('data-id')
 			drive_file_mtime = context.$file.attr('data-mtime')
 			drive_file_hash = context.$file.attr('data-etag')
+            drive_mounttype = context.$file.attr('data-mounttype')
 		} else {
 			OC.Notification.show('Error', {type: 'error'});
 			return
@@ -976,9 +1153,42 @@
 			return btoa(encodeURI(str))
 		}
 
-		let peertime_userToken, peertime_file_hash, peertime_UploadFileWithHash_FileID, peertime_UploadFileWithHash_Path, peertime_startSending_body, peertime_QuerySending_token, peertime_UploadNewFile_body, peertime_UpdateAttachmentBindRelation_body, peertime_FinishPercent
+		let peertime_file_hash, peertime_UploadFileWithHash_FileID, peertime_UploadFileWithHash_Path, peertime_startSending_body, peertime_QuerySending_token, peertime_UploadNewFile_body, peertime_UpdateAttachmentBindRelation_body, peertime_FinishPercent
 		peertime_FinishPercent = -1
 		peertime_uniqueIDs = 'drive-' + drive_file_id + '-' + drive_file_mtime;
+		let peertime_LinkedAttachmentInfo = function () {
+			$.ajax({
+				type: 'GET',
+				url: 'https://api.peertime.cn/peertime/V1/P1Integration/LinkedAttachmentInfo?languageid=1&uniqueIDs=' + peertime_uniqueIDs,
+				contentType: 'application/json',
+				success:function (res) {
+					if (res.RetCode !== 0) {
+						OC.Notification.show(t('files', 'Failed to LinkedAttachmentInfo') + " : " + res.ErrorMessage, {type: 'error'});
+						return
+					}
+					if (res.RetData.length > 0) {
+						peertime_AttachmentID = res.RetData[0]['AttachmentID']
+						AttachmentIDhandler();
+						return
+					} else {
+						if (action === 'ViewSync') {
+							//鼠标悬浮不应该触发文件上传
+							return
+						}
+					}
+					peertime_file_hash = drive_file_hash;
+					if (peertime_userToken) {
+						peertime_UploadFileWithHash()
+					} else {
+						peertime_ExchangeToken()
+					}
+
+				}
+			}).fail(function(err) {
+				console.log(err)
+				OC.Notification.show(t('files', 'Failed to LinkedAttachmentInfo') + " : " + JSON.stringify(err), {type: 'error'});
+			});
+		}
 		let peertime_ExchangeToken = function () {
 			$.ajax({
 				type: 'POST',
@@ -994,37 +1204,11 @@
 						return
 					}
 					peertime_userToken = res.RetData
-					peertime_LinkedAttachmentInfo()
-				}
-			}).fail(function(err) {
-				console.log(err)
-				OC.Notification.show(t('files', 'Failed to get user token') + " : " + JSON.stringify(err), {type: 'error'});
-			});
-		}
-		let peertime_LinkedAttachmentInfo = function () {
-			$.ajax({
-				type: 'GET',
-				url: 'https://api.peertime.cn/peertime/V1/P1Integration/LinkedAttachmentInfo?languageid=1&uniqueIDs=' + peertime_uniqueIDs,
-				contentType: 'application/json',
-				headers: {
-					'Usertoken': peertime_userToken
-				},
-				success:function (res) {
-					if (res.RetCode !== 0) {
-						OC.Notification.show(t('files', 'Failed to LinkedAttachmentInfo') + " : " + res.ErrorMessage, {type: 'error'});
-						return
-					}
-					if (res.RetData.length > 0) {
-						peertime_AttachmentID = res.RetData[0]['AttachmentID']
-						AttachmentIDhandler();
-						return
-					}
-					peertime_file_hash = drive_file_hash;
 					peertime_UploadFileWithHash()
 				}
 			}).fail(function(err) {
 				console.log(err)
-				OC.Notification.show(t('files', 'Failed to LinkedAttachmentInfo') + " : " + JSON.stringify(err), {type: 'error'});
+				OC.Notification.show(t('files', 'Failed to get user token') + " : " + JSON.stringify(err), {type: 'error'});
 			});
 		}
 		let peertime_UploadFileWithHash = function () {
@@ -1043,6 +1227,13 @@
 						AttachmentIDhandler();
 						return
 					}
+					if (res.RetCode === -1401) {
+						//延时执行防止卡死
+						setTimeout(function () {
+							peertime_ExchangeToken()
+						}, 500)
+						return
+					}
 					if (res.RetCode !== -6002) {
 						OC.Notification.show(t('files', 'Failed to UploadFileWithHash') + " : " + res.ErrorMessage, {type: 'error'});
 						return
@@ -1052,11 +1243,17 @@
 					let peertime_file_ext = filename.substr(filename.lastIndexOf('.') + 1)
 					let peertime_file_name = filename.replace(/\.[^/.]+$/, "")
 
-					if (OC.debug) {
-						peertime_startSending_body = '{"Bucket":{"ServiceProviderId":2,"RegionName":"oss-cn-shanghai","BucketName":"peertime"},"Config":{"Retry":{"MaxTimes":1,"MinutesOfIntervalTime":2}},"SourceUrl":"https://drive.windows365.org.cn:44443/apps/integration_kloud/downloadFile?uid=' + OC.getCurrentUser().uid + '&file_id=' + drive_file_id + '&token=' + drive_file_hash +'","DocumentType":"' + peertime_file_ext + '","TargetFolderKey":"' + peertime_UploadFileWithHash_Path + '","IgnoreConverting":false,"EnableExtractingImagesFromPDF":false,"FileName":"' + peertime_file_name + '"}'
+					if (drive_mounttype === 'external') {
+						//todo drive和AmazonS3目前写死的
+						peertime_startSending_body = '{"Bucket":{"ServiceProviderId":2,"RegionName":"oss-cn-shanghai","BucketName":"peertime"},"Config":{"Retry":{"MaxTimes":1,"MinutesOfIntervalTime":2}},"SourceUrl":"http://drive.windows365.org.cn:19000/drive' + drive_dir.replace('/AmazonS3', '') + '/' + filename + '","DocumentType":"' + peertime_file_ext + '","TargetFolderKey":"' + peertime_UploadFileWithHash_Path + '","IgnoreConverting":false,"EnableExtractingImagesFromPDF":false,"FileName":"' + peertime_file_name + '"}'
 					} else {
-						peertime_startSending_body = '{"Bucket":{"ServiceProviderId":2,"RegionName":"oss-cn-shanghai","BucketName":"peertime"},"Config":{"Retry":{"MaxTimes":1,"MinutesOfIntervalTime":2}},"SourceUrl":"'+ window.location.origin + '/apps/integration_kloud/downloadFile?uid=' + OC.getCurrentUser().uid + '&file_id=' + drive_file_id + '&token=' + drive_file_hash +'","DocumentType":"' + peertime_file_ext + '","TargetFolderKey":"' + peertime_UploadFileWithHash_Path + '","IgnoreConverting":false,"EnableExtractingImagesFromPDF":false,"FileName":"' + peertime_file_name + '"}'
+						if (OC.debug) {
+							peertime_startSending_body = '{"Bucket":{"ServiceProviderId":2,"RegionName":"oss-cn-shanghai","BucketName":"peertime"},"Config":{"Retry":{"MaxTimes":1,"MinutesOfIntervalTime":2}},"SourceUrl":"https://drive.windows365.org.cn:44443/apps/integration_kloud/downloadFile?uid=' + OC.getCurrentUser().uid + '&file_id=' + drive_file_id + '&token=' + drive_file_hash +'","DocumentType":"' + peertime_file_ext + '","TargetFolderKey":"' + peertime_UploadFileWithHash_Path + '","IgnoreConverting":false,"EnableExtractingImagesFromPDF":false,"FileName":"' + peertime_file_name + '"}'
+						} else {
+							peertime_startSending_body = '{"Bucket":{"ServiceProviderId":2,"RegionName":"oss-cn-shanghai","BucketName":"peertime"},"Config":{"Retry":{"MaxTimes":1,"MinutesOfIntervalTime":2}},"SourceUrl":"'+ window.location.origin + '/apps/integration_kloud/downloadFile?uid=' + OC.getCurrentUser().uid + '&file_id=' + drive_file_id + '&token=' + drive_file_hash +'","DocumentType":"' + peertime_file_ext + '","TargetFolderKey":"' + peertime_UploadFileWithHash_Path + '","IgnoreConverting":false,"EnableExtractingImagesFromPDF":false,"FileName":"' + peertime_file_name + '"}'
+						}
 					}
+
 					peertime_startSending()
 				}
 			}).fail(function(err) {
@@ -1181,7 +1378,7 @@
 		}
 
 		if (drive_phone !== '') {
-			peertime_ExchangeToken()
+			peertime_LinkedAttachmentInfo()
 		} else {
 			$.ajax({
 				type: 'POST',
@@ -1189,7 +1386,7 @@
 				contentType: 'application/json',
 				success:function (res) {
 					drive_phone = res.message
-					peertime_ExchangeToken()
+					peertime_LinkedAttachmentInfo()
 				}
 			}).fail(function(err) {
 				OC.Notification.show(err.responseJSON.message, {type: 'error'});

@@ -307,6 +307,11 @@ OC.L10N.register(
     "Failed to get startSending token" : "获取startSending token失败",
     "Failed to UploadFileWithHash": "UploadFileWithHash失败",
     "Send successful": "发送成功",
+    "Start LiveSync": "开始实时音想",
+    "Failed to create_live_sync": "创建实时音想失败",
+    "Start LiveSync Meeting Now": "开始实时音想会议",
+    "Sync": "音想",
+    "Unnamed Sync": "未命名音想"
 
 },
 "nplurals=1; plural=0;");

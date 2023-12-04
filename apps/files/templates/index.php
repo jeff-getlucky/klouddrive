@@ -67,6 +67,9 @@
 	.peertime-progress-pie-chart {
 		margin: 50px auto 0;
 	}
+    .without-after.bubble:after {
+        display: none;
+    }
 
 </style>
 <div id="peertime-progress">
@@ -83,6 +86,33 @@
 </div>
 
 <?php /** @var \OCP\IL10N $l */ ?>
+
+<dialog id="livesync_dialog">
+    <div class="oc-dialog" id="livesync_modal" tabindex="-1" role="dialog" style="display: none; position: fixed; width: auto; height: auto;">
+        <h2 class="oc-dialog-title"><?php p($l->t('LiveSync'))?></h2>
+        <button class="oc-dialog-close" id="livesync_close"></button>
+        <span><?php p($l->t('Title'))?></span>
+        <br>
+        <input type="text" id="livesync_name" value="" style="width: 100%">
+        <br>
+        <div style="display: flex;align-items: center">
+            <input type="checkbox" id="livesync_startMeetingNow" checked="checked">
+            <span><?php p($l->t('Start LiveSync Meeting Now'))?></span>
+        </div>
+        <div class="oc-dialog-buttonrow twobuttons">
+            <button id="livesync_no"><?php p($l->t('No'))?></button>
+            <button id="livesync_yes" class="primary"><?php p($l->t('Yes'))?></button>
+        </div>
+    </div>
+</dialog>
+
+
+<div id="sync_menu" class="fileActionsMenu popovermenu without-after bubble open menu" style="display:none; z-index:1999;position: fixed;">
+    <ul id="sync_menu_ul">
+    </ul>
+</div>
+
+
 <?php $_['appNavigation']->printPage(); ?>
 
 <!-- New files vue container -->
