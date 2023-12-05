@@ -2624,4 +2624,4 @@ __webpack_require__.r(__webpack_exports__);
 /***/ })
 
 }]);
-//# sourceMappingURL=settings-apps-view-settings-apps-view.js.map?v=f285b394b08676a64a46
+//# sourceMappingURL=settings-apps-view-settings-apps-view.js.map?v=a6839c7f6e944d798d6b

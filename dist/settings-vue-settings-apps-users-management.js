@@ -1099,7 +1099,12 @@ const state = {
   minPasswordLength: 0,
   usersOffset: 0,
   usersLimit: 25,
-  userCount: 0
+  userCount: 0,
+  userCapacity: 0,
+  quotaTotal: 0,
+  quotaTotalHuman: 0,
+  quotaUsed: 0,
+  quotaUsedHuman: 0
 };
 const mutations = {
   appendUsers(state, usersObj) {
@@ -1115,11 +1120,21 @@ const mutations = {
     let {
       groups,
       orderBy,
-      userCount
+      userCount,
+      userCapacity,
+      quotaTotal,
+      quotaTotalHuman,
+      quotaUsed,
+      quotaUsedHuman
     } = _ref;
     state.groups = groups.map(group => Object.assign({}, defaults.group, group));
     state.orderBy = orderBy;
     state.userCount = userCount;
+    state.userCapacity = userCapacity;
+    state.quotaTotal = quotaTotal;
+    state.quotaTotalHuman = quotaTotalHuman;
+    state.quotaUsed = quotaUsed;
+    state.quotaUsedHuman = quotaUsedHuman;
     state.groups = orderGroups(state.groups, state.orderBy);
   },
   addGroup(state, _ref2) {
@@ -1308,6 +1323,21 @@ const mutations = {
   resetUsers(state) {
     state.users = [];
     state.usersOffset = 0;
+  },
+  setUserCapacity(state, capacity) {
+    state.userCapacity = capacity;
+  },
+  setQuotaTotal(state, total) {
+    state.quotaTotal = total;
+  },
+  setQuotaTotalHuman(state, totalHuman) {
+    state.quotaTotalHuman = totalHuman;
+  },
+  setQuotaUsed(state, used) {
+    state.quotaUsed = used;
+  },
+  setQuotaUsedHuman(state, usedHuman) {
+    state.quotaUsedHuman = usedHuman;
   }
 };
 const getters = {
@@ -1332,6 +1362,21 @@ const getters = {
   },
   getUserCount(state) {
     return state.userCount;
+  },
+  getUserCapacity(state) {
+    return state.userCapacity;
+  },
+  getQuotaTotal(state) {
+    return state.quotaTotal;
+  },
+  getQuotaTotalHuman(state) {
+    return state.quotaTotalHuman;
+  },
+  getQuotaUsed(state) {
+    return state.quotaUsed;
+  },
+  getQuotaUsedHuman(state) {
+    return state.quotaUsedHuman;
   }
 };
 const CancelToken = _nextcloud_axios__WEBPACK_IMPORTED_MODULE_1__["default"].CancelToken;
@@ -1942,6 +1987,17 @@ const actions = {
       userid,
       error
     }));
+  },
+  getUserCapacity(context) {
+    return _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateUrl)('/settings/userCapacity')).then(response => context.commit('setUserCapacity', response.data.data.capacity));
+  },
+  getQuotaStatus(context) {
+    return _api_js__WEBPACK_IMPORTED_MODULE_0__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_2__.generateUrl)('/settings/quotaStatus')).then(function (response) {
+      context.commit('setQuotaTotal', response.data.data.quotaTotal);
+      context.commit('setQuotaTotalHuman', response.data.data.quotaTotalHuman);
+      context.commit('setQuotaUsed', response.data.data.quotaUsed);
+      context.commit('setQuotaUsedHuman', response.data.data.quotaUsedHuman);
+    });
   }
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -2256,7 +2312,7 @@ module.exports = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5v
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "" + chunkId + "-" + chunkId + ".js?v=" + {"_fd9c-_0fee-_0cc0-_aeb7":"8ddaf1c5ac4936c83e13","settings-users":"34afce2d3dfba0e6fc20","settings-apps-view":"f285b394b08676a64a46"}[chunkId] + "";
+/******/ 			return "" + chunkId + "-" + chunkId + ".js?v=" + {"_fd9c-_0fee-_0cc0-_aeb7":"8ddaf1c5ac4936c83e13","settings-users":"e1bd2c9949021244bbf0","settings-apps-view":"a6839c7f6e944d798d6b"}[chunkId] + "";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -2469,4 +2525,4 @@ module.exports = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5v
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=settings-vue-settings-apps-users-management.js.map?v=3a1514b1e0af5ddb1957
+//# sourceMappingURL=settings-vue-settings-apps-users-management.js.map?v=1dbece0182ec0390f9d5

@@ -2817,4 +2817,4 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=files-sidebar.js.map?v=f3218a787d6f7e599d7c
+//# sourceMappingURL=files-sidebar.js.map?v=4b1902da9b8395e54d6a

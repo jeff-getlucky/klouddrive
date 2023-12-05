@@ -670,4 +670,4 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=settings-vue-settings-admin-ai.js.map?v=48da946aec3929854de0
+//# sourceMappingURL=settings-vue-settings-admin-ai.js.map?v=e928e7a6b78a418cf1f0

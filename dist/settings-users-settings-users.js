@@ -324,8 +324,9 @@ const unlimitedQuota = {
   label: t('settings', 'Unlimited')
 };
 const defaultQuota = {
-  id: 'default',
-  label: t('settings', 'Default quota')
+  id: '5 GB',
+  //禁用默认配额
+  label: '5 GB'
 };
 const newUser = {
   id: '',
@@ -379,7 +380,8 @@ const newUser = {
       scrolled: false,
       possibleManagers: [],
       searchQuery: '',
-      newUser: Object.assign({}, newUser)
+      newUser: Object.assign({}, newUser),
+      newsubmit_disabled: false
     };
   },
   computed: {
@@ -427,7 +429,7 @@ const newUser = {
       if (this.settings.allowUnlimitedQuota) {
         quotaPreset.unshift(this.unlimitedQuota);
       }
-      quotaPreset.unshift(this.defaultQuota);
+      // quotaPreset.unshift(this.defaultQuota)
       return quotaPreset;
     },
     minPasswordLength() {
@@ -595,6 +597,7 @@ const newUser = {
       this.loading.all = false;
     },
     createUser() {
+      this.newsubmit_disabled = true;
       this.loading.all = true;
       this.$store.dispatch('addUser', {
         userid: this.newUser.id,
@@ -610,8 +613,10 @@ const newUser = {
         this.resetForm();
         this.$refs.newusername.focus();
         this.closeModal();
+        this.newsubmit_disabled = false;
       }).catch(error => {
         this.loading.all = false;
+        this.newsubmit_disabled = false;
         if (error.response && error.response.data && error.response.data.ocs && error.response.data.ocs.meta) {
           const statuscode = error.response.data.ocs.meta.statuscode;
           if (statuscode === 102) {
@@ -1173,6 +1178,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_click_outside__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(vue_click_outside__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _nextcloud_auth__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @nextcloud/auth */ "./node_modules/@nextcloud/auth/dist/index.es.mjs");
 /* harmony import */ var _mixins_UserRowMixin_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../mixins/UserRowMixin.js */ "./apps/settings/src/mixins/UserRowMixin.js");
+/* harmony import */ var _nextcloud_axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @nextcloud/axios */ "./node_modules/@nextcloud/axios/dist/index.js");
+/* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.js");
+
+
 
 
 
@@ -1276,6 +1285,17 @@ __webpack_require__.r(__webpack_exports__);
     },
     toggleEdit() {
       this.$emit('update:editing', true);
+    },
+    impersonate(user_id) {
+      const data = {
+        userId: encodeURIComponent(user_id)
+      };
+      _nextcloud_axios__WEBPACK_IMPORTED_MODULE_6__["default"].post((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_7__.generateUrl)('apps/impersonate/user'), data).then(res => {
+        window.location = OC.generateUrl('/');
+      }).catch(err => {
+        OC.Notification.showTemporary(t('impersonate', err.response.data.message));
+        throw err;
+      });
     }
   }
 });
@@ -1435,6 +1455,21 @@ vue__WEBPACK_IMPORTED_MODULE_16__["default"].use((vue_localstorage__WEBPACK_IMPO
     userCount() {
       return this.$store.getters.getUserCount;
     },
+    userCapacity() {
+      return this.$store.getters.getUserCapacity;
+    },
+    quotaTotal() {
+      return this.$store.getters.getQuotaTotal;
+    },
+    quotaTotalHuman() {
+      return this.$store.getters.getQuotaTotalHuman;
+    },
+    quotaUsed() {
+      return this.$store.getters.getQuotaUsed;
+    },
+    quotaUsedHuman() {
+      return this.$store.getters.getQuotaUsedHuman;
+    },
     settings() {
       return this.$store.getters.getServerData;
     },
@@ -1509,8 +1544,15 @@ vue__WEBPACK_IMPORTED_MODULE_16__["default"].use((vue_localstorage__WEBPACK_IMPO
     this.$store.commit('initGroups', {
       groups: this.$store.getters.getServerData.groups,
       orderBy: this.$store.getters.getServerData.sortGroups,
-      userCount: this.$store.getters.getServerData.userCount
+      userCount: this.$store.getters.getServerData.userCount,
+      userCapacity: this.$store.getters.getServerData.userCapacity,
+      quotaTotal: this.$store.getters.getServerData.quotaTotal,
+      quotaTotalHuman: this.$store.getters.getServerData.quotaTotalHuman,
+      quotaUsed: this.$store.getters.getServerData.quotaUsed,
+      quotaUsedHuman: this.$store.getters.getServerData.quotaUsedHuman
     });
+    this.$store.dispatch('getUserCapacity');
+    this.$store.dispatch('getQuotaStatus');
     this.$store.dispatch('getPasswordPolicyMinLength');
   },
   created() {
@@ -1780,7 +1822,7 @@ var render = function render() {
         return _vm.createUser.apply(null, arguments);
       }
     }
-  }, [_c("h2", [_vm._v(_vm._s(_vm.t("settings", "New user111")))]), _vm._v(" "), _c("input", {
+  }, [_c("h2", [_vm._v(_vm._s(_vm.t("settings", "New user")))]), _vm._v(" "), _c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -1967,10 +2009,10 @@ var render = function render() {
   }, [_c("NcMultiselect", {
     staticClass: "multiselect-vue",
     attrs: {
-      "allow-empty": false,
       options: _vm.quotaOptions,
       placeholder: _vm.t("settings", "Select user quota"),
       taggable: true,
+      required: "required",
       label: "label",
       "track-by": "id"
     },
@@ -2046,11 +2088,12 @@ var render = function render() {
   }, [_c("NcButton", {
     attrs: {
       id: "newsubmit",
+      disabled: _vm.newsubmit_disabled,
       type: "primary",
       "native-type": "submit",
       value: ""
     }
-  }, [_vm._v("\n\t\t\t\t\t" + _vm._s(_vm.t("settings", "Add a new user")) + "\n\t\t\t\t")])], 1)])]) : _vm._e(), _vm._v(" "), _c("div", {
+  }, [_vm._v("\n\t\t\t\t\t\t" + _vm._s(_vm.t("settings", "Add a new user")) + "\n\t\t\t\t\t")])], 1)])]) : _vm._e(), _vm._v(" "), _c("div", {
     staticClass: "row",
     class: {
       sticky: _vm.scrolled && !_vm.showConfig.showNewUserForm
@@ -2070,50 +2113,50 @@ var render = function render() {
     }
   }, [_c("div", {
     staticClass: "subtitle"
-  }, [_c("strong", [_vm._v("\n\t\t\t\t\t" + _vm._s(_vm.t("settings", "Display name")) + "\n\t\t\t\t")])]), _vm._v("\n\t\t\t" + _vm._s(_vm.t("settings", "Username")) + "\n\t\t")]), _vm._v(" "), _c("div", {
+  }, [_c("strong", [_vm._v("\n\t\t\t\t\t\t" + _vm._s(_vm.t("settings", "Display name")) + "\n\t\t\t\t\t")])]), _vm._v("\n\t\t\t\t" + _vm._s(_vm.t("settings", "Username")) + "\n\t\t\t")]), _vm._v(" "), _c("div", {
     staticClass: "password",
     attrs: {
       id: "headerPassword"
     }
-  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.t("settings", "Password")) + "\n\t\t")]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.t("settings", "Password")) + "\n\t\t\t")]), _vm._v(" "), _c("div", {
     staticClass: "mailAddress",
     attrs: {
       id: "headerAddress"
     }
-  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.t("settings", "Email")) + "\n\t\t")]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.t("settings", "Email")) + "\n\t\t\t")]), _vm._v(" "), _c("div", {
     staticClass: "groups",
     attrs: {
       id: "headerGroups"
     }
-  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.t("settings", "Groups")) + "\n\t\t")]), _vm._v(" "), _vm.subAdminsGroups.length > 0 && _vm.settings.isAdmin ? _c("div", {
+  }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.t("settings", "Groups")) + "\n\t\t\t")]), _vm._v(" "), _vm.subAdminsGroups.length > 0 && _vm.settings.isAdmin ? _c("div", {
     staticClass: "subadmins",
     attrs: {
       id: "headerSubAdmins"
     }
-  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.t("settings", "Group admin for")) + "\n\t\t")]) : _vm._e(), _vm._v(" "), _c("div", {
+  }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.t("settings", "Group admin for")) + "\n\t\t\t")]) : _vm._e(), _vm._v(" "), _c("div", {
     staticClass: "quota",
     attrs: {
       id: "headerQuota"
     }
-  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.t("settings", "Quota")) + "\n\t\t")]), _vm._v(" "), _vm.showConfig.showLanguages ? _c("div", {
+  }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.t("settings", "Quota")) + "\n\t\t\t")]), _vm._v(" "), _vm.showConfig.showLanguages ? _c("div", {
     staticClass: "languages",
     attrs: {
       id: "headerLanguages"
     }
-  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.t("settings", "Language")) + "\n\t\t")]) : _vm._e(), _vm._v(" "), _vm.showConfig.showUserBackend || _vm.showConfig.showStoragePath ? _c("div", {
+  }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.t("settings", "Language")) + "\n\t\t\t")]) : _vm._e(), _vm._v(" "), _vm.showConfig.showUserBackend || _vm.showConfig.showStoragePath ? _c("div", {
     staticClass: "headerUserBackend userBackend"
   }, [_vm.showConfig.showUserBackend ? _c("div", {
     staticClass: "userBackend"
-  }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.t("settings", "User backend")) + "\n\t\t\t")]) : _vm._e(), _vm._v(" "), _vm.showConfig.showStoragePath ? _c("div", {
+  }, [_vm._v("\n\t\t\t\t\t" + _vm._s(_vm.t("settings", "User backend")) + "\n\t\t\t\t")]) : _vm._e(), _vm._v(" "), _vm.showConfig.showStoragePath ? _c("div", {
     staticClass: "subtitle storageLocation"
-  }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.t("settings", "Storage location")) + "\n\t\t\t")]) : _vm._e()]) : _vm._e(), _vm._v(" "), _vm.showConfig.showLastLogin ? _c("div", {
+  }, [_vm._v("\n\t\t\t\t\t" + _vm._s(_vm.t("settings", "Storage location")) + "\n\t\t\t\t")]) : _vm._e()]) : _vm._e(), _vm._v(" "), _vm.showConfig.showLastLogin ? _c("div", {
     staticClass: "headerLastLogin lastLogin"
-  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.t("settings", "Last login")) + "\n\t\t")]) : _vm._e(), _vm._v(" "), _c("div", {
+  }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.t("settings", "Last login")) + "\n\t\t\t")]) : _vm._e(), _vm._v(" "), _c("div", {
     staticClass: "manager",
     attrs: {
       id: "headerManager"
     }
-  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.t("settings", "Manager")) + "\n\t\t")]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.t("settings", "Manager")) + "\n\t\t\t")]), _vm._v(" "), _c("div", {
     staticClass: "userActions"
   })]), _vm._v(" "), _vm._l(_vm.filteredUsers, function (user) {
     return _c("user-row", {
@@ -2632,6 +2675,11 @@ var render = function render() {
       width: "32",
       height: "32",
       src: _vm.generateAvatar(_vm.user.id, _vm.isDarkTheme)
+    },
+    on: {
+      click: function ($event) {
+        return _vm.impersonate(_vm.user.id);
+      }
     }
   }) : _vm._e()]), _vm._v(" "), _c("div", {
     staticClass: "name"
@@ -2642,22 +2690,22 @@ var render = function render() {
     attrs: {
       title: _vm.user.displayname.length > 20 ? _vm.user.displayname : ""
     }
-  }, [_c("strong", [_vm._v("\n\t\t\t\t\t" + _vm._s(_vm.user.displayname) + "\n\t\t\t\t")])])]), _vm._v("\n\t\t" + _vm._s(_vm.user.id) + "\n\t")]), _vm._v(" "), _c("div"), _vm._v(" "), _c("div", {
+  }, [_c("strong", [_vm._v("\n\t\t\t\t\t\t" + _vm._s(_vm.user.displayname) + "\n\t\t\t\t\t")])])]), _vm._v("\n\t\t\t" + _vm._s(_vm.user.id) + "\n\t\t")]), _vm._v(" "), _c("div"), _vm._v(" "), _c("div", {
     staticClass: "mailAddress"
   }, [_c("div", {
     staticClass: "cellText",
     attrs: {
       title: _vm.user.email !== null && _vm.user.email.length > 20 ? _vm.user.email : ""
     }
-  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.user.email) + "\n\t\t")])]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.user.email) + "\n\t\t\t")])]), _vm._v(" "), _c("div", {
     staticClass: "groups"
-  }, [_vm._v("\n\t\t" + _vm._s(_vm.userGroupsLabels) + "\n\t")]), _vm._v(" "), _vm.subAdminsGroups.length > 0 && _vm.settings.isAdmin ? _c("div", {
+  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.userGroupsLabels) + "\n\t\t")]), _vm._v(" "), _vm.subAdminsGroups.length > 0 && _vm.settings.isAdmin ? _c("div", {
     staticClass: "subAdminsGroups"
-  }, [_vm._v("\n\t\t" + _vm._s(_vm.userSubAdminsGroupsLabels) + "\n\t")]) : _vm._e(), _vm._v(" "), _c("div", {
+  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.userSubAdminsGroupsLabels) + "\n\t\t")]) : _vm._e(), _vm._v(" "), _c("div", {
     staticClass: "userQuota"
   }, [_c("div", {
     staticClass: "quota"
-  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.userQuota) + " (" + _vm._s(_vm.usedSpace) + ")\n\t\t\t"), _c("progress", {
+  }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.userQuota) + " (" + _vm._s(_vm.usedSpace) + ")\n\t\t\t\t"), _c("progress", {
     staticClass: "quota-user-progress",
     class: {
       warn: _vm.usedQuota > 80
@@ -2670,23 +2718,23 @@ var render = function render() {
     }
   })])]), _vm._v(" "), _vm.showConfig.showLanguages ? _c("div", {
     staticClass: "languages"
-  }, [_vm._v("\n\t\t" + _vm._s(_vm.userLanguage.name) + "\n\t")]) : _vm._e(), _vm._v(" "), _vm.showConfig.showUserBackend || _vm.showConfig.showStoragePath ? _c("div", {
+  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.userLanguage.name) + "\n\t\t")]) : _vm._e(), _vm._v(" "), _vm.showConfig.showUserBackend || _vm.showConfig.showStoragePath ? _c("div", {
     staticClass: "userBackend"
   }, [_vm.showConfig.showUserBackend ? _c("div", {
     staticClass: "userBackend"
-  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.user.backend) + "\n\t\t")]) : _vm._e(), _vm._v(" "), _vm.showConfig.showStoragePath ? _c("div", {
+  }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.user.backend) + "\n\t\t\t")]) : _vm._e(), _vm._v(" "), _vm.showConfig.showStoragePath ? _c("div", {
     staticClass: "storageLocation subtitle",
     attrs: {
       title: _vm.user.storageLocation
     }
-  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.user.storageLocation) + "\n\t\t")]) : _vm._e()]) : _vm._e(), _vm._v(" "), _vm.showConfig.showLastLogin ? _c("div", {
+  }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.user.storageLocation) + "\n\t\t\t")]) : _vm._e()]) : _vm._e(), _vm._v(" "), _vm.showConfig.showLastLogin ? _c("div", {
     staticClass: "lastLogin",
     attrs: {
       title: _vm.userLastLoginTooltip
     }
-  }, [_vm._v("\n\t\t" + _vm._s(_vm.userLastLogin) + "\n\t")]) : _vm._e(), _vm._v(" "), _c("div", {
+  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.userLastLogin) + "\n\t\t")]) : _vm._e(), _vm._v(" "), _c("div", {
     staticClass: "managers"
-  }, [_vm._v("\n\t\t" + _vm._s(_vm.user.manager) + "\n\t")]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\n\t\t\t" + _vm._s(_vm.user.manager) + "\n\t\t")]), _vm._v(" "), _c("div", {
     staticClass: "userActions"
   }, [_vm.canEdit && !_vm.loading.all ? _c("div", {
     staticClass: "toggleUserActions"
@@ -2735,7 +2783,7 @@ var render = function render() {
     }
   }, [_c("div", {
     staticClass: "icon-checkmark"
-  }), _vm._v("\n\t\t\t" + _vm._s(_vm.feedbackMessage) + "\n\t\t")])])]);
+  }), _vm._v("\n\t\t\t\t" + _vm._s(_vm.feedbackMessage) + "\n\t\t\t")])])]);
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -2862,22 +2910,45 @@ var render = function render() {
     }, {
       key: "footer",
       fn: function () {
-        return [_c("NcAppNavigationSettings", [_c("div", [_c("p", [_vm._v(_vm._s(_vm.t("settings", "Default quota:")))]), _vm._v(" "), _c("NcMultiselect", {
-          attrs: {
-            value: _vm.defaultQuota,
-            options: _vm.quotaOptions,
-            "tag-placeholder": "create",
-            placeholder: _vm.t("settings", "Select default quota"),
-            label: "label",
-            "track-by": "id",
-            "allow-empty": false,
-            taggable: true
-          },
-          on: {
-            tag: _vm.validateQuota,
-            input: _vm.setDefaultQuota
+        return [_vm.userCapacity > 0 ? _c("div", {
+          staticStyle: {
+            "margin-left": "20px",
+            "margin-right": "20px",
+            "margin-bottom": "5px"
           }
-        })], 1), _vm._v(" "), _c("div", [_c("input", {
+        }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.t("settings", "Allocable quantity")) + ": " + _vm._s(_vm.userCapacity) + "\n\t\t\t\t"), _c("progress", {
+          class: {
+            warn: _vm.userCount / _vm.userCapacity > 0.8
+          },
+          staticStyle: {
+            "max-height": "30px"
+          },
+          attrs: {
+            max: _vm.userCapacity
+          },
+          domProps: {
+            value: _vm.userCount
+          }
+        })]) : _vm._e(), _vm._v(" "), _vm.quotaTotal > 0 ? _c("div", {
+          staticStyle: {
+            "margin-left": "20px",
+            "margin-right": "20px",
+            "margin-bottom": "5px"
+          }
+        }, [_vm._v("\n\t\t\t\t" + _vm._s(_vm.t("settings", "Allocable quota")) + ": " + _vm._s(_vm.quotaTotalHuman) + "\n\t\t\t\t"), _c("progress", {
+          class: {
+            warn: _vm.quotaUsed / _vm.quotaTotal > 0.8
+          },
+          staticStyle: {
+            "max-height": "30px"
+          },
+          attrs: {
+            max: _vm.quotaTotal
+          },
+          domProps: {
+            value: _vm.quotaUsed
+          }
+        })]) : _vm._e(), _vm._v(" "), _c("NcAppNavigationSettings", [ false ? 0 : _vm._e(), _vm._v(" "), _c("div", [_c("input", {
           directives: [{
             name: "model",
             rawName: "v-model",
@@ -3820,4 +3891,4 @@ __webpack_require__.r(__webpack_exports__);
 /***/ })
 
 }]);
-//# sourceMappingURL=settings-users-settings-users.js.map?v=34afce2d3dfba0e6fc20
+//# sourceMappingURL=settings-users-settings-users.js.map?v=e1bd2c9949021244bbf0

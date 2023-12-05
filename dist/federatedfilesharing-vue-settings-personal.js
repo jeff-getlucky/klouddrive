@@ -808,4 +808,4 @@ module.exports = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5v
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=federatedfilesharing-vue-settings-personal.js.map?v=9b2176a85709dc94136a
+//# sourceMappingURL=federatedfilesharing-vue-settings-personal.js.map?v=24532473ac62b2c127b6

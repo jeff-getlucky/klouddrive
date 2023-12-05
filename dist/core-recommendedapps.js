@@ -698,4 +698,4 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=core-recommendedapps.js.map?v=22fd3100fb4204a8468c
+//# sourceMappingURL=core-recommendedapps.js.map?v=baa0bd1916ce4ac82e1d

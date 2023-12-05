@@ -1773,4 +1773,4 @@ module.exports = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5v
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=settings-vue-settings-admin-basic-settings.js.map?v=dce5b8f74a061b043f03
+//# sourceMappingURL=settings-vue-settings-admin-basic-settings.js.map?v=64d76fcbdffaebb72899

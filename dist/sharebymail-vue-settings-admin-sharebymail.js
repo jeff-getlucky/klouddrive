@@ -597,4 +597,4 @@ module.exports = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5v
 /******/ 	
 /******/ })()
 ;
-//# sourceMappingURL=sharebymail-vue-settings-admin-sharebymail.js.map?v=8f73e74fe2dcdd433448
+//# sourceMappingURL=sharebymail-vue-settings-admin-sharebymail.js.map?v=7b92751b4f41aa47fa1a
