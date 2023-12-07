@@ -6,23 +6,25 @@ use OCP\Accounts\IAccountManager;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
-use OCP\Files\IRootFolder;
 use OCP\IRequest;
 use OCP\IUserSession;
 use OCP\L10N\IFactory;
 use Sabre\VObject\UUIDUtil;
+use OCP\IUserManager;
 
 class KloudController extends Controller
 {
     private IUserSession $userSession;
     private IAccountManager $accountManager;
     private IFactory $l10nFactory;
-    public function __construct(string $appName, IRequest $request, IUserSession $userSession, IAccountManager $accountManager, IFactory $l10nFactory, IRootFolder $rootFolder)
+	private IUserManager $userManager;
+    public function __construct(string $appName, IRequest $request, IUserSession $userSession, IAccountManager $accountManager, IFactory $l10nFactory, IUserManager $userManager)
     {
         parent::__construct($appName, $request);
         $this->userSession = $userSession;
         $this->accountManager = $accountManager;
         $this->l10nFactory = $l10nFactory;
+		$this->userManager = $userManager;
     }
 
     /**
@@ -226,6 +228,40 @@ class KloudController extends Controller
         }
         return new DataResponse(['message' => $phone], Http::STATUS_OK);
     }
+
+	/**
+	 * @NoCSRFRequired
+	 * @PublicPage
+	 * @return DataResponse
+	 */
+	public function driveStatus()
+	{
+		$people_capacity = intval(\OC::$server->getConfig()->getSystemValue('people_capacity', 0));
+		$userCount = array_reduce($this->userManager->countUsers(), function ($v, $w) {
+			return $v + (int)$w;
+		}, 0);
+		if ($people_capacity == 0) {
+			$people_capacity = '∞';
+		}
+		$quota_total_human = (\OC::$server->getConfig()->getSystemValue('storage_capacity', 0));
+		$quota_total = \OC_Helper::computerFileSize($quota_total_human);
+		$quota_used_human = 0;
+		$quota_sum = 0;
+		if ($quota_total) {
+			$qb = \OCP\Server::get(\OCP\IDBConnection::class)->getQueryBuilder();
+			$result = $qb->select('configvalue')
+				->from('preferences')
+				->where($qb->expr()->eq('appid', $qb->createNamedParameter('files')))
+				->executeQuery();
+			$quota_sum = 0;
+			while ($row = $result->fetch()) {
+				$bytesQuota = \OC_Helper::computerFileSize($row['configvalue']);
+				$quota_sum += $bytesQuota;
+			}
+			$quota_used_human = \OC_Helper::humanFileSize($quota_sum);
+		}
+		return new DataResponse(['msg' => '', 'data' => ['capacity' => $people_capacity, 'user_count' => $userCount, 'quotaTotalHuman' => $quota_total_human, 'quotaTotal' => $quota_total, 'quotaUsed' => $quota_sum, 'quotaUsedHuman' => $quota_used_human], 'code' => 200]);
+	}
 
     private function JsonReturn($success, $data){
         header('Content-Type: application/json');

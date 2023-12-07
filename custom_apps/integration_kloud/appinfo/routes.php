@@ -20,5 +20,6 @@ return [
 		['name' => 'Kloud#sendToKloudMeeting', 'url' => '/sendToKloudMeeting', 'verb' => 'POST'],
 		['name' => 'Kloud#getPhone', 'url' => '/getPhone', 'verb' => 'POST'],
 		['name' => 'Kloud#downloadFile', 'url' => '/downloadFile', 'verb' => 'GET'],
+		['name' => 'Kloud#driveStatus', 'url' => '/driveStatus', 'verb' => 'GET'],
 	],
 ];
