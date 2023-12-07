@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 namespace OCA\KloudIntegration\AppInfo;
 
-use OCA\KloudIntegration\Dashboard\TemplateWidget;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\AppFramework\Bootstrap\IBootContext;
@@ -19,7 +18,7 @@ class Application extends App implements IBootstrap {
 	}
 
 	public function register(IRegistrationContext $context): void {
-		$context->registerDashboardWidget(TemplateWidget::class);
+		
 	}
 
 	public function boot(IBootContext $context): void {
