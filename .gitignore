@@ -1,5 +1,4 @@
 # the default generated dir + db file
-/dist
 /data
 /config/config.php
 /config/*.config.php
@@ -164,8 +163,8 @@ composer.phar
 /lib/composer/bin
 /vendor-bin/**/vendor
 
-./.htaccess
-core/js/mimetypelist.js
+#./.htaccess
+#core/js/mimetypelist.js
 
 # Tests - cypress
 cypress/snapshots
