@@ -6,7 +6,7 @@
 /config/mount.php
 /apps/inc.php
 /assets
-/.htaccess
+#/.htaccess
 /node_modules
 /translationfiles
 /translationtool.phar
