@@ -244,6 +244,11 @@ class KloudController extends Controller
 		}
 		$signature = $_GET['signature'];
 		$data = $_GET['timestamp'];
+
+		if (time() - $data > 60) {
+			exit;
+		}
+
 		$algorithm = "sha256";
 		$key = \OC::$server->getConfig()->getSystemValue('instanceid', "");
 		if (!hash_equals($signature, hash_hmac($algorithm, $data, $key))) {
