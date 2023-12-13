@@ -236,6 +236,20 @@ class KloudController extends Controller
 	 */
 	public function driveStatus()
 	{
+		if (!isset($_GET['signature'])) {
+			exit;
+		}
+		if (!isset($_GET['timestamp'])) {
+			exit;
+		}
+		$signature = $_GET['signature'];
+		$data = $_GET['timestamp'];
+		$algorithm = "sha256";
+		$key = \OC::$server->getConfig()->getSystemValue('instanceid', "");
+		if (!hash_equals($signature, hash_hmac($algorithm, $data, $key))) {
+			exit;
+		}
+
 		$people_capacity = intval(\OC::$server->getConfig()->getSystemValue('people_capacity', 0));
 		$userCount = array_reduce($this->userManager->countUsers(), function ($v, $w) {
 			return $v + (int)$w;
