@@ -282,6 +282,19 @@ class KloudController extends Controller
 		return new DataResponse(['msg' => '', 'data' => ['capacity' => $people_capacity, 'user_count' => $userCount, 'quotaTotalHuman' => $quota_total_human, 'quotaTotal' => $quota_total, 'quotaUsed' => $quota_sum, 'quotaUsedHuman' => $quota_used_human], 'code' => 200]);
 	}
 
+	/**
+	 * @NoCSRFRequired
+	 * @PublicPage
+	 * @return DataResponse
+	 */
+	public function opcacheReset()
+	{
+		if (function_exists('opcache_reset')) {
+			opcache_reset();
+		}
+		exit;
+	}
+
     private function JsonReturn($success, $data){
         header('Content-Type: application/json');
         echo json_encode(['Success' => $success, 'Data' => $data]);

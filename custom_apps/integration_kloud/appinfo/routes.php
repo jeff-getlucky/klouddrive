@@ -21,5 +21,6 @@ return [
 		['name' => 'Kloud#getPhone', 'url' => '/getPhone', 'verb' => 'POST'],
 		['name' => 'Kloud#downloadFile', 'url' => '/downloadFile', 'verb' => 'GET'],
 		['name' => 'Kloud#driveStatus', 'url' => '/driveStatus', 'verb' => 'GET'],
+		['name' => 'Kloud#opcacheReset', 'url' => '/opcacheReset', 'verb' => 'GET'],
 	],
 ];
