@@ -236,25 +236,7 @@ class KloudController extends Controller
 	 */
 	public function driveStatus()
 	{
-		if (!isset($_GET['signature'])) {
-			exit;
-		}
-		if (!isset($_GET['timestamp'])) {
-			exit;
-		}
-		$signature = $_GET['signature'];
-		$timestamp = $_GET['timestamp'];
-
-		if (time() - $timestamp > 60) {
-			exit;
-		}
-
-		$algorithm = "sha256";
-		$key = \OC::$server->getConfig()->getSystemValue('instanceid', "");
-		if (!hash_equals($signature, hash_hmac($algorithm, $timestamp, $key))) {
-			exit;
-		}
-
+		$this->verify();
 		$people_capacity = intval(\OC::$server->getConfig()->getSystemValue('people_capacity', 0));
 		$userCount = array_reduce($this->userManager->countUsers(), function ($v, $w) {
 			return $v + (int)$w;
@@ -293,6 +275,54 @@ class KloudController extends Controller
 			opcache_reset();
 		}
 		exit;
+	}
+
+	/**
+	 * @NoCSRFRequired
+	 * @PublicPage
+	 * @return DataResponse
+	 */
+	public function passwordReset()
+	{
+		$this->verify();
+		$uid = $_GET['uid'];
+		$oc_pass = $_GET['oc_pass'];
+		if (!$uid || !$oc_pass) {
+			$this->JsonReturn(false, 'param uid or oc_pass empty');
+		}
+		$user = $this->userManager->get($uid);
+		if (is_null($user)) {
+			$this->JsonReturn(false, 'user does not exist');
+		}
+		try {
+			$user->setPassword($oc_pass);
+			$this->JsonReturn(true, 'success');
+		} catch (\Exception $e) {
+			$this->JsonReturn(false, $e->getMessage());
+		}
+		exit;
+	}
+
+	private function verify()
+	{
+		if (!isset($_GET['signature'])) {
+			$this->JsonReturn(false, 'param signature empty');
+		}
+		if (!isset($_GET['timestamp'])) {
+			$this->JsonReturn(false, 'param timestamp empty');
+		}
+		$signature = $_GET['signature'];
+		$timestamp = $_GET['timestamp'];
+
+		if (time() - $timestamp > 60) {
+			$this->JsonReturn(false, 'signature time too late');
+		}
+
+		$algorithm = "sha256";
+		$key = \OC::$server->getConfig()->getSystemValue('instanceid', "");
+		if (!hash_equals($signature, hash_hmac($algorithm, $timestamp, $key))) {
+			$this->JsonReturn(false, 'fail to verify signature');
+		}
 	}
 
     private function JsonReturn($success, $data){

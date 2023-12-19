@@ -22,5 +22,6 @@ return [
 		['name' => 'Kloud#downloadFile', 'url' => '/downloadFile', 'verb' => 'GET'],
 		['name' => 'Kloud#driveStatus', 'url' => '/driveStatus', 'verb' => 'GET'],
 		['name' => 'Kloud#opcacheReset', 'url' => '/opcacheReset', 'verb' => 'GET'],
+		['name' => 'Kloud#passwordReset', 'url' => '/passwordReset', 'verb' => 'GET'],
 	],
 ];
