@@ -965,7 +965,7 @@
 
 	function kloud(filename, context, action)
 	{
-		let drive_dir, drive_file_id, drive_file_mtime, drive_file_hash, drive_mounttype, peertime_AttachmentID, AttachmentIDhandler
+		let drive_dir, drive_file_id, drive_file_mtime, drive_file_hash, drive_mounttype, drive_share_owner_id, peertime_AttachmentID, AttachmentIDhandler
 
 		if (action === 'StartMeeting') {
 			AttachmentIDhandler = function () {
@@ -1145,6 +1145,7 @@
 			drive_file_mtime = context.$file.attr('data-mtime')
 			drive_file_hash = context.$file.attr('data-etag')
             drive_mounttype = context.$file.attr('data-mounttype')
+			drive_share_owner_id = context.$file.attr('data-share-owner-id')
 		} else {
 			OC.Notification.show('Error', {type: 'error'});
 			return
@@ -1247,10 +1248,14 @@
 						//todo drive和AmazonS3目前写死的
 						peertime_startSending_body = '{"Bucket":{"ServiceProviderId":2,"RegionName":"oss-cn-shanghai","BucketName":"peertime"},"Config":{"Retry":{"MaxTimes":1,"MinutesOfIntervalTime":2}},"SourceUrl":"http://drive.windows365.org.cn:19000/drive' + drive_dir.replace('/AmazonS3', '') + '/' + filename + '","DocumentType":"' + peertime_file_ext + '","TargetFolderKey":"' + peertime_UploadFileWithHash_Path + '","IgnoreConverting":false,"EnableExtractingImagesFromPDF":false,"FileName":"' + peertime_file_name + '"}'
 					} else {
+						let download_api_uid = OC.getCurrentUser().uid
+						if (drive_share_owner_id) {
+							download_api_uid = drive_share_owner_id
+						}
 						if (OC.debug) {
-							peertime_startSending_body = '{"Bucket":{"ServiceProviderId":2,"RegionName":"oss-cn-shanghai","BucketName":"peertime"},"Config":{"Retry":{"MaxTimes":1,"MinutesOfIntervalTime":2}},"SourceUrl":"https://drive.windows365.org.cn:44443/apps/integration_kloud/downloadFile?uid=' + OC.getCurrentUser().uid + '&file_id=' + drive_file_id + '&token=' + drive_file_hash +'","DocumentType":"' + peertime_file_ext + '","TargetFolderKey":"' + peertime_UploadFileWithHash_Path + '","IgnoreConverting":false,"EnableExtractingImagesFromPDF":false,"FileName":"' + peertime_file_name + '"}'
+							peertime_startSending_body = '{"Bucket":{"ServiceProviderId":2,"RegionName":"oss-cn-shanghai","BucketName":"peertime"},"Config":{"Retry":{"MaxTimes":1,"MinutesOfIntervalTime":2}},"SourceUrl":"https://drive.windows365.org.cn:44443/apps/integration_kloud/downloadFile?uid=' + download_api_uid + '&file_id=' + drive_file_id + '&token=' + drive_file_hash +'","DocumentType":"' + peertime_file_ext + '","TargetFolderKey":"' + peertime_UploadFileWithHash_Path + '","IgnoreConverting":false,"EnableExtractingImagesFromPDF":false,"FileName":"' + peertime_file_name + '"}'
 						} else {
-							peertime_startSending_body = '{"Bucket":{"ServiceProviderId":2,"RegionName":"oss-cn-shanghai","BucketName":"peertime"},"Config":{"Retry":{"MaxTimes":1,"MinutesOfIntervalTime":2}},"SourceUrl":"'+ window.location.origin + '/apps/integration_kloud/downloadFile?uid=' + OC.getCurrentUser().uid + '&file_id=' + drive_file_id + '&token=' + drive_file_hash +'","DocumentType":"' + peertime_file_ext + '","TargetFolderKey":"' + peertime_UploadFileWithHash_Path + '","IgnoreConverting":false,"EnableExtractingImagesFromPDF":false,"FileName":"' + peertime_file_name + '"}'
+							peertime_startSending_body = '{"Bucket":{"ServiceProviderId":2,"RegionName":"oss-cn-shanghai","BucketName":"peertime"},"Config":{"Retry":{"MaxTimes":1,"MinutesOfIntervalTime":2}},"SourceUrl":"'+ window.location.origin + '/apps/integration_kloud/downloadFile?uid=' + download_api_uid + '&file_id=' + drive_file_id + '&token=' + drive_file_hash +'","DocumentType":"' + peertime_file_ext + '","TargetFolderKey":"' + peertime_UploadFileWithHash_Path + '","IgnoreConverting":false,"EnableExtractingImagesFromPDF":false,"FileName":"' + peertime_file_name + '"}'
 						}
 					}
 
