@@ -962,6 +962,17 @@
 		})
 	}
 
+	function kloud_iframe(url)
+	{
+		$('#peertime_iframe_modal').css('width', document.body.clientWidth * 0.9)
+		$('#peertime_iframe_modal').css('height', document.body.clientHeight * 0.9)
+		$('#peertime_iframe_modal').show()
+		$('#peertime_ifram_id').attr('src', url)
+		$('#peertime_iframe__close').off('click').on('click', function () {
+			$('#peertime_ifram_id').attr('src', '')
+			$('#peertime_iframe_modal').hide();
+		})
+	}
 
 	function kloud(filename, context, action)
 	{
@@ -969,11 +980,11 @@
 
 		if (action === 'StartMeeting') {
 			AttachmentIDhandler = function () {
-				window.open('https://kloud.cn/p1/meeting/create?title=' + encodeURI(filename) + '&attachmentIds='+peertime_AttachmentID+'&needClearSessionStorage=1&noCallBack=0')
+				kloud_iframe('https://kloud.cn/p1/meeting/create?title=' + encodeURI(filename) + '&attachmentIds='+peertime_AttachmentID+'&needClearSessionStorage=1&noCallBack=0')
 			}
 		} else if (action === 'ViewLiveDoc') {
 			AttachmentIDhandler = function () {
-				window.open('https://kloud.cn/attachment/' + peertime_AttachmentID)
+				kloud_iframe('https://kloud.cn/attachment/' + peertime_AttachmentID)
 			}
 		} else if (action === 'SendtoKloudmeeting') {
 			AttachmentIDhandler = function () {
@@ -1066,9 +1077,9 @@
 											let mainLiveSyncId = res.data.mainLiveSyncId
 											let subMeetingId = res.data.subMeetingId
 											if (!subMeetingId) {
-												window.open('https://kloud.cn/livesync/' + mainLiveSyncId)
+												kloud_iframe('https://kloud.cn/livesync/' + mainLiveSyncId)
 											} else if (subMeetingId) {
-												window.open('https://kloud.cn/livesync/' + subMeetingId)
+												kloud_iframe('https://kloud.cn/livesync/' + subMeetingId)
 											} else {
 												OC.Notification.show(t('files', 'Failed to create_live_sync') + " : " + JSON.stringify(err), {type: 'error'});
 											}

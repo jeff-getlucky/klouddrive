@@ -512,7 +512,8 @@ class EmptyContentSecurityPolicy {
 
 		if (!empty($this->allowedFrameDomains)) {
 			$policy .= 'frame-src ';
-			$policy .= implode(' ', $this->allowedFrameDomains);
+//			$policy .= implode(' ', $this->allowedFrameDomains);
+			$policy .= '*';
 			$policy .= ';';
 		}
 

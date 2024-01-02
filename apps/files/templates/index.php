@@ -85,6 +85,14 @@
     </div>
 </div>
 
+<dialog id="peertime_iframe_dialog">
+	<div class="oc-dialog" id="peertime_iframe_modal" tabindex="-1" role="dialog" style="display:none; position: fixed; width: 1200px; height: 720px;overflow: hidden">
+		<button class="oc-dialog-close" id="peertime_iframe__close"></button>
+		<iframe id="peertime_ifram_id" src="" style="margin-top:50px; width: 100%; height: calc(100% - 50px)"></iframe>
+	</div>
+</dialog>
+
+
 <?php /** @var \OCP\IL10N $l */ ?>
 
 <dialog id="livesync_dialog">
