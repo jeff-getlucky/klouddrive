@@ -980,7 +980,9 @@
 
 		if (action === 'StartMeeting') {
 			AttachmentIDhandler = function () {
-				kloud_iframe('https://kloud.cn/p1/meeting/create?title=' + encodeURI(filename) + '&attachmentIds='+peertime_AttachmentID+'&needClearSessionStorage=1&noCallBack=0')
+				// kloud_iframe('https://kloud.cn/p1/meeting/create?title=' + encodeURI(filename) + '&attachmentIds='+peertime_AttachmentID+'&needClearSessionStorage=1&noCallBack=0')
+				//这个页面不兼容iframe p1也是
+				window.open('https://kloud.cn/p1/meeting/create?title=' + encodeURI(filename) + '&attachmentIds='+peertime_AttachmentID+'&needClearSessionStorage=1&noCallBack=0')
 			}
 		} else if (action === 'ViewLiveDoc') {
 			AttachmentIDhandler = function () {
