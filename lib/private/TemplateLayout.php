@@ -211,6 +211,9 @@ class TemplateLayout extends \OC_Template {
 			if (empty(self::$versionHash)) {
 				$v = \OC_App::getAppVersions();
 				$v['core'] = implode('.', \OCP\Util::getVersion());
+				if (file_exists('dist/version.txt')) {
+					$v['version'] =file_get_contents('dist/version.txt');
+				}
 				self::$versionHash = substr(md5(implode(',', $v)), 0, 8);
 			}
 		} else {
